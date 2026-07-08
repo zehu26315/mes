@@ -1,6 +1,6 @@
 package com.example.mes.modules.system.service.impl;
 
-import com.example.mes.common.PageResult;
+import com.example.mes.common.response.PageResult;
 import com.example.mes.modules.system.entity.SysUser;
 import com.example.mes.modules.system.entity.SysUserRole;
 import com.example.mes.modules.system.mapper.SysUserMapper;

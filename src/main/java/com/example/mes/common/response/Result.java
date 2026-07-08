@@ -1,4 +1,4 @@
-package com.example.mes.common;
+package com.example.mes.common.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

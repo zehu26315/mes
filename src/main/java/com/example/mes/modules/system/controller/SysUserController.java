@@ -1,7 +1,7 @@
 package com.example.mes.modules.system.controller;
 
-import com.example.mes.common.PageResult;
-import com.example.mes.common.Result;
+import com.example.mes.common.response.PageResult;
+import com.example.mes.common.response.Result;
 import com.example.mes.modules.system.entity.SysUser;
 import com.example.mes.modules.system.service.SysUserService;
 import lombok.RequiredArgsConstructor;
