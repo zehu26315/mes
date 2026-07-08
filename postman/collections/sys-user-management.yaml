@@ -1,0 +1,151 @@
+name: 系统用户管理
+collections:
+  - name: 用户管理
+    items:
+      - name: 创建用户
+        request:
+          method: POST
+          url: "{{baseUrl}}/api/sys/users"
+          headers:
+            - key: Content-Type
+              value: application/json
+          body:
+            mode: raw
+            raw: |
+              {
+                "username": "admin",
+                "password": "123456",
+                "realName": "管理员",
+                "phone": "13800138000",
+                "email": "admin@mes.com",
+                "deptId": null,
+                "status": 1
+              }
+
+      - name: 更新用户
+        request:
+          method: PUT
+          url: "{{baseUrl}}/api/sys/users/{{userId}}"
+          headers:
+            - key: Content-Type
+              value: application/json
+          body:
+            mode: raw
+            raw: |
+              {
+                "realName": "管理员(已更新)",
+                "phone": "13900139000",
+                "email": "admin_new@mes.com",
+                "status": 1
+              }
+
+      - name: 删除用户
+        request:
+          method: DELETE
+          url: "{{baseUrl}}/api/sys/users/{{userId}}"
+
+      - name: 查询用户详情
+        request:
+          method: GET
+          url: "{{baseUrl}}/api/sys/users/{{userId}}"
+
+      - name: 用户列表（分页搜索）
+        request:
+          method: GET
+          url: "{{baseUrl}}/api/sys/users"
+          queryParams:
+            - key: keyword
+              value: ""
+              disabled: true
+            - key: status
+              value: "1"
+              disabled: true
+            - key: page
+              value: "1"
+            - key: pageSize
+              value: "10"
+
+      - name: 分配角色
+        request:
+          method: POST
+          url: "{{baseUrl}}/api/sys/users/{{userId}}/roles"
+          headers:
+            - key: Content-Type
+              value: application/json
+          body:
+            mode: raw
+            raw: "[1, 2]"
+
+  - name: 角色管理
+    items:
+      - name: 创建角色
+        request:
+          method: POST
+          url: "{{baseUrl}}/api/sys/roles"
+          headers:
+            - key: Content-Type
+              value: application/json
+          body:
+            mode: raw
+            raw: |
+              {
+                "roleName": "管理员",
+                "roleCode": "ADMIN",
+                "description": "系统管理员，拥有所有权限",
+                "status": 1
+              }
+
+      - name: 更新角色
+        request:
+          method: PUT
+          url: "{{baseUrl}}/api/sys/roles/{{roleId}}"
+          headers:
+            - key: Content-Type
+              value: application/json
+          body:
+            mode: raw
+            raw: |
+              {
+                "roleName": "管理员(已更新)",
+                "description": "更新后的描述",
+                "status": 1
+              }
+
+      - name: 删除角色
+        request:
+          method: DELETE
+          url: "{{baseUrl}}/api/sys/roles/{{roleId}}"
+
+      - name: 查询角色详情
+        request:
+          method: GET
+          url: "{{baseUrl}}/api/sys/roles/{{roleId}}"
+
+      - name: 全部角色列表（不分页）
+        request:
+          method: GET
+          url: "{{baseUrl}}/api/sys/roles/all"
+
+      - name: 角色列表（分页搜索）
+        request:
+          method: GET
+          url: "{{baseUrl}}/api/sys/roles"
+          queryParams:
+            - key: keyword
+              value: ""
+              disabled: true
+            - key: status
+              value: "1"
+              disabled: true
+            - key: page
+              value: "1"
+            - key: pageSize
+              value: "10"
+
+vars:
+  - key: baseUrl
+    value: http://localhost:8000
+  - key: userId
+    value: "1"
+  - key: roleId
+    value: "1"
