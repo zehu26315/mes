@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.barcode.mapper.BarcodeRecordMapper">
+
+    <resultMap id="BaseResultMap" type="BarcodeRecord">
+        <id property="id" column="id"/>
+        <result property="barcodeNo" column="barcode_no"/>
+        <result property="barcodeTypeId" column="barcode_type_id"/>
+        <result property="ruleId" column="rule_id"/>
+        <result property="productCode" column="product_code"/>
+        <result property="workOrderId" column="work_order_id"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="status" column="status"/>
+        <result property="printCount" column="print_count"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, barcode_no, barcode_type_id, rule_id, product_code, work_order_id,
+        batch_no, status, print_count, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO barcode_record (barcode_no, barcode_type_id, rule_id, product_code, work_order_id, batch_no, status, print_count)
+        VALUES (#{barcodeNo}, #{barcodeTypeId}, #{ruleId}, #{productCode}, #{workOrderId}, #{batchNo}, #{status}, #{printCount})
+    </insert>
+
+    <update id="update">
+        UPDATE barcode_record
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="printCount != null">print_count = #{printCount},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM barcode_record WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM barcode_record
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByBarcodeNo" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM barcode_record
+        WHERE barcode_no = #{barcodeNo}
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM barcode_record
+        WHERE 1 = 1
+        <if test="keyword != null and keyword != ''">
+            AND (barcode_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR batch_no LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM barcode_record
+        WHERE 1 = 1
+        <if test="keyword != null and keyword != ''">
+            AND (barcode_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR batch_no LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+</mapper>

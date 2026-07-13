@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.material.mapper.MatInventoryMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.mes.modules.material.entity.MatInventory">
+        <id property="id" column="id"/>
+        <result property="materialId" column="material_id"/>
+        <result property="materialCode" column="material_code"/>
+        <result property="materialName" column="material_name"/>
+        <result property="warehouse" column="warehouse"/>
+        <result property="location" column="location"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="qty" column="qty"/>
+        <result property="lockedQty" column="locked_qty"/>
+        <result property="unit" column="unit"/>
+        <result property="supplier" column="supplier"/>
+        <result property="productionDate" column="production_date"/>
+        <result property="expiryDate" column="expiry_date"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, material_id, material_code, material_name, warehouse, location, batch_no,
+        qty, locked_qty, unit, supplier, production_date, expiry_date, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO mat_inventory (material_id, material_code, material_name, warehouse, location, batch_no,
+                                   qty, locked_qty, unit, supplier, production_date, expiry_date)
+        VALUES (#{materialId}, #{materialCode}, #{materialName}, #{warehouse}, #{location}, #{batchNo},
+                #{qty,jdbcType=DECIMAL}, #{lockedQty,jdbcType=DECIMAL}, #{unit}, #{supplier}, #{productionDate}, #{expiryDate})
+    </insert>
+
+    <update id="update">
+        UPDATE mat_inventory
+        <set>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="materialCode != null">material_code = #{materialCode},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="warehouse != null">warehouse = #{warehouse},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="batchNo != null">batch_no = #{batchNo},</if>
+            <if test="qty != null">qty = #{qty,jdbcType=DECIMAL},</if>
+            <if test="lockedQty != null">locked_qty = #{lockedQty,jdbcType=DECIMAL},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="supplier != null">supplier = #{supplier},</if>
+            <if test="productionDate != null">production_date = #{productionDate},</if>
+            <if test="expiryDate != null">expiry_date = #{expiryDate},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM mat_inventory
+        WHERE 1 = 1
+        <if test="materialId != null">
+            AND material_id = #{materialId}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+        <if test="warehouse != null and warehouse != ''">
+            AND warehouse = #{warehouse}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM mat_inventory
+        WHERE 1 = 1
+        <if test="materialId != null">
+            AND material_id = #{materialId}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+        <if test="warehouse != null and warehouse != ''">
+            AND warehouse = #{warehouse}
+        </if>
+    </select>
+
+    <select id="selectLowStock" resultMap="BaseResultMap">
+        SELECT i.*
+        FROM mat_inventory i
+        JOIN md_material m ON i.material_id = m.id
+        WHERE i.qty &lt;= m.safety_stock
+        ORDER BY i.id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.trace.mapper.TraceProductMaterialMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.mes.modules.trace.entity.TraceProductMaterial">
+        <id property="id" column="id"/>
+        <result property="barcodeNo" column="barcode_no"/>
+        <result property="materialBatchNo" column="material_batch_no"/>
+        <result property="materialCode" column="material_code"/>
+        <result property="usedQty" column="used_qty"/>
+        <result property="processCode" column="process_code"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, barcode_no, material_batch_no, material_code, used_qty, process_code, create_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO trace_product_material (barcode_no, material_batch_no, material_code,
+                                             used_qty, process_code)
+        VALUES (#{barcodeNo}, #{materialBatchNo}, #{materialCode},
+                #{usedQty}, #{processCode})
+    </insert>
+
+    <select id="selectByBarcodeNo" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM trace_product_material
+        WHERE barcode_no = #{barcodeNo}
+    </select>
+
+    <select id="selectByMaterialBatchNo" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM trace_product_material
+        WHERE material_batch_no = #{materialBatchNo}
+    </select>
+
+</mapper>

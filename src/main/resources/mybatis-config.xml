@@ -14,5 +14,18 @@
 
     <typeAliases>
         <package name="com.example.mes.modules.system.entity"/>
+        <package name="com.example.mes.modules.masterdata.entity"/>
+        <package name="com.example.mes.modules.process.entity"/>
+        <package name="com.example.mes.modules.production.entity"/>
+        <package name="com.example.mes.modules.plan.entity"/>
+        <package name="com.example.mes.modules.material.entity"/>
+        <package name="com.example.mes.modules.warehouse.entity"/>
+        <package name="com.example.mes.modules.equipment.entity"/>
+        <package name="com.example.mes.modules.quality.entity"/>
+        <package name="com.example.mes.modules.andon.entity"/>
+        <package name="com.example.mes.modules.barcode.entity"/>
+        <package name="com.example.mes.modules.trace.entity"/>
+        <package name="com.example.mes.modules.wages.entity"/>
+        <package name="com.example.mes.modules.erp.entity"/>
     </typeAliases>
 </configuration>

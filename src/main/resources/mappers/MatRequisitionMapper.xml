@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.material.mapper.MatRequisitionMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.mes.modules.material.entity.MatRequisition">
+        <id property="id" column="id"/>
+        <result property="reqNo" column="req_no"/>
+        <result property="workOrderId" column="work_order_id"/>
+        <result property="materialId" column="material_id"/>
+        <result property="materialCode" column="material_code"/>
+        <result property="materialName" column="material_name"/>
+        <result property="reqQty" column="req_qty"/>
+        <result property="actualQty" column="actual_qty"/>
+        <result property="unit" column="unit"/>
+        <result property="warehouse" column="warehouse"/>
+        <result property="location" column="location"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="status" column="status"/>
+        <result property="applicant" column="applicant"/>
+        <result property="approver" column="approver"/>
+        <result property="issueTime" column="issue_time"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, req_no, work_order_id, material_id, material_code, material_name,
+        req_qty, actual_qty, unit, warehouse, location, batch_no,
+        status, applicant, approver, issue_time, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO mat_requisition (req_no, work_order_id, material_id, material_code, material_name,
+                                     req_qty, actual_qty, unit, warehouse, location, batch_no,
+                                     status, applicant, approver, issue_time)
+        VALUES (#{reqNo}, #{workOrderId}, #{materialId}, #{materialCode}, #{materialName},
+                #{reqQty,jdbcType=DECIMAL}, #{actualQty,jdbcType=DECIMAL}, #{unit}, #{warehouse}, #{location}, #{batchNo},
+                #{status}, #{applicant}, #{approver}, #{issueTime})
+    </insert>
+
+    <update id="update">
+        UPDATE mat_requisition
+        <set>
+            <if test="workOrderId != null">work_order_id = #{workOrderId},</if>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="materialCode != null">material_code = #{materialCode},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="reqQty != null">req_qty = #{reqQty,jdbcType=DECIMAL},</if>
+            <if test="actualQty != null">actual_qty = #{actualQty,jdbcType=DECIMAL},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="warehouse != null">warehouse = #{warehouse},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="batchNo != null">batch_no = #{batchNo},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="applicant != null">applicant = #{applicant},</if>
+            <if test="approver != null">approver = #{approver},</if>
+            <if test="issueTime != null">issue_time = #{issueTime},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE mat_requisition SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <update id="approve">
+        UPDATE mat_requisition SET status = 'APPROVED' WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM mat_requisition
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM mat_requisition
+        WHERE is_deleted = 0
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+        <if test="workOrderId != null">
+            AND work_order_id = #{workOrderId}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM mat_requisition
+        WHERE is_deleted = 0
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+        <if test="workOrderId != null">
+            AND work_order_id = #{workOrderId}
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            AND material_code = #{materialCode}
+        </if>
+    </select>
+
+</mapper>

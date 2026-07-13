@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.trace.mapper.TraceProductMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.mes.modules.trace.entity.TraceProduct">
+        <id property="id" column="id"/>
+        <result property="barcodeNo" column="barcode_no"/>
+        <result property="productCode" column="product_code"/>
+        <result property="productName" column="product_name"/>
+        <result property="workOrderId" column="work_order_id"/>
+        <result property="productionLine" column="production_line"/>
+        <result property="equipmentId" column="equipment_id"/>
+        <result property="processCode" column="process_code"/>
+        <result property="worker" column="worker"/>
+        <result property="shift" column="shift"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="productionDate" column="production_date"/>
+        <result property="productionTime" column="production_time"/>
+        <result property="inspectionResult" column="inspection_result"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, barcode_no, product_code, product_name, work_order_id,
+        production_line, equipment_id, process_code, worker, shift,
+        batch_no, production_date, production_time, inspection_result, create_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO trace_product (barcode_no, product_code, product_name, work_order_id,
+                                    production_line, equipment_id, process_code, worker, shift,
+                                    batch_no, production_date, production_time, inspection_result)
+        VALUES (#{barcodeNo}, #{productCode}, #{productName}, #{workOrderId},
+                #{productionLine}, #{equipmentId}, #{processCode}, #{worker}, #{shift},
+                #{batchNo}, #{productionDate}, #{productionTime}, #{inspectionResult})
+    </insert>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM trace_product
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByBarcodeNo" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM trace_product
+        WHERE barcode_no = #{barcodeNo}
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM trace_product
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM trace_product
+    </select>
+
+</mapper>

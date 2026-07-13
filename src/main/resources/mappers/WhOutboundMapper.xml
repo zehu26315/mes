@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.warehouse.mapper.WhOutboundMapper">
+    <resultMap id="BaseResultMap" type="WhOutbound">
+        <id property="id" column="id"/>
+        <result property="outboundNo" column="outbound_no"/>
+        <result property="outboundType" column="outbound_type"/>
+        <result property="warehouseId" column="warehouse_id"/>
+        <result property="materialCode" column="material_code"/>
+        <result property="materialName" column="material_name"/>
+        <result property="qty" column="qty" jdbcType="DECIMAL"/>
+        <result property="unit" column="unit"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="targetOrderNo" column="target_order_no"/>
+        <result property="status" column="status"/>
+        <result property="operator" column="operator"/>
+        <result property="outboundTime" column="outbound_time"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    <sql id="BaseColumns">id, outbound_no, outbound_type, warehouse_id, material_code, material_name, qty, unit, batch_no, target_order_no, status, operator, outbound_time, is_deleted, create_time, update_time</sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO wh_outbound (outbound_no, outbound_type, warehouse_id, material_code, material_name, qty, unit, batch_no, target_order_no, status, operator, outbound_time)
+        VALUES (#{outboundNo}, #{outboundType}, #{warehouseId}, #{materialCode}, #{materialName}, #{qty}, #{unit}, #{batchNo}, #{targetOrderNo}, #{status}, #{operator}, #{outboundTime})
+    </insert>
+    <update id="update">
+        UPDATE wh_outbound SET status = #{status}, operator = #{operator} WHERE id = #{id} AND is_deleted = 0
+    </update>
+    <update id="deleteById">UPDATE wh_outbound SET is_deleted = 1 WHERE id = #{id}</update>
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/> FROM wh_outbound WHERE id = #{id} AND is_deleted = 0
+    </select>
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/> FROM wh_outbound WHERE is_deleted = 0
+        <if test="type != null and type != ''">AND outbound_type = #{type}</if>
+        <if test="warehouseId != null">AND warehouse_id = #{warehouseId}</if>
+        <if test="status != null and status != ''">AND status = #{status}</if>
+        ORDER BY id DESC LIMIT #{offset}, #{limit}
+    </select>
+    <select id="countList" resultType="long">
+        SELECT COUNT(*) FROM wh_outbound WHERE is_deleted = 0
+        <if test="type != null and type != ''">AND outbound_type = #{type}</if>
+        <if test="warehouseId != null">AND warehouse_id = #{warehouseId}</if>
+        <if test="status != null and status != ''">AND status = #{status}</if>
+    </select>
+</mapper>

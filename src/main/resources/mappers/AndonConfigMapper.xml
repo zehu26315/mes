@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.andon.mapper.AndonConfigMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.mes.modules.andon.entity.AndonConfig">
+        <id property="id" column="id"/>
+        <result property="configName" column="config_name"/>
+        <result property="andonTypeId" column="andon_type_id"/>
+        <result property="workCenter" column="work_center"/>
+        <result property="triggerCondition" column="trigger_condition"/>
+        <result property="notifyUsers" column="notify_users"/>
+        <result property="escalationTime" column="escalation_time"/>
+        <result property="status" column="status"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, config_name, andon_type_id, work_center, trigger_condition,
+        notify_users, escalation_time, status, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO andon_config (config_name, andon_type_id, work_center, trigger_condition,
+                                  notify_users, escalation_time, status)
+        VALUES (#{configName}, #{andonTypeId}, #{workCenter}, #{triggerCondition},
+                #{notifyUsers}, #{escalationTime}, #{status})
+    </insert>
+
+    <update id="update">
+        UPDATE andon_config
+        <set>
+            <if test="configName != null">config_name = #{configName},</if>
+            <if test="andonTypeId != null">andon_type_id = #{andonTypeId},</if>
+            <if test="workCenter != null">work_center = #{workCenter},</if>
+            <if test="triggerCondition != null">trigger_condition = #{triggerCondition},</if>
+            <if test="notifyUsers != null">notify_users = #{notifyUsers},</if>
+            <if test="escalationTime != null">escalation_time = #{escalationTime},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE andon_config SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM andon_config
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM andon_config
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (config_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR work_center LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="andonTypeId != null">
+            AND andon_type_id = #{andonTypeId}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM andon_config
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (config_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR work_center LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="andonTypeId != null">
+            AND andon_type_id = #{andonTypeId}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+</mapper>

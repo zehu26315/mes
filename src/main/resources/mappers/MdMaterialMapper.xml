@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.masterdata.mapper.MdMaterialMapper">
+
+    <resultMap id="BaseResultMap" type="MdMaterial">
+        <id property="id" column="id"/>
+        <result property="materialCode" column="material_code"/>
+        <result property="materialName" column="material_name"/>
+        <result property="materialSpec" column="material_spec"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="unit" column="unit"/>
+        <result property="safetyStock" column="safety_stock" jdbcType="DECIMAL"/>
+        <result property="currentStock" column="current_stock" jdbcType="DECIMAL"/>
+        <result property="status" column="status"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, material_code, material_name, material_spec, category_id, unit,
+        safety_stock, current_stock, status, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO md_material (material_code, material_name, material_spec, category_id,
+                                 unit, safety_stock, current_stock, status)
+        VALUES (#{materialCode}, #{materialName}, #{materialSpec}, #{categoryId},
+                #{unit}, #{safetyStock}, #{currentStock}, #{status})
+    </insert>
+
+    <update id="update">
+        UPDATE md_material
+        <set>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="materialSpec != null">material_spec = #{materialSpec},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="safetyStock != null">safety_stock = #{safetyStock},</if>
+            <if test="currentStock != null">current_stock = #{currentStock},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE md_material SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM md_material
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM md_material
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (material_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR material_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR material_spec LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM md_material
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (material_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR material_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR material_spec LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+</mapper>

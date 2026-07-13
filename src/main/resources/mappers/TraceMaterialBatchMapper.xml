@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.trace.mapper.TraceMaterialBatchMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.mes.modules.trace.entity.TraceMaterialBatch">
+        <id property="id" column="id"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="materialId" column="material_id"/>
+        <result property="materialCode" column="material_code"/>
+        <result property="materialName" column="material_name"/>
+        <result property="supplier" column="supplier"/>
+        <result property="supplierBatch" column="supplier_batch"/>
+        <result property="receivedDate" column="received_date"/>
+        <result property="qty" column="qty"/>
+        <result property="inspectionResult" column="inspection_result"/>
+        <result property="certificateNo" column="certificate_no"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, batch_no, material_id, material_code, material_name,
+        supplier, supplier_batch, received_date, qty,
+        inspection_result, certificate_no, create_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO trace_material_batch (batch_no, material_id, material_code, material_name,
+                                           supplier, supplier_batch, received_date, qty,
+                                           inspection_result, certificate_no)
+        VALUES (#{batchNo}, #{materialId}, #{materialCode}, #{materialName},
+                #{supplier}, #{supplierBatch}, #{receivedDate}, #{qty},
+                #{inspectionResult}, #{certificateNo})
+    </insert>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM trace_material_batch
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectByBatchNo" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM trace_material_batch
+        WHERE batch_no = #{batchNo}
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM trace_material_batch
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM trace_material_batch
+    </select>
+
+</mapper>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.quality.mapper.QualityInspectionItemMapper">
+
+    <resultMap id="BaseResultMap" type="QualityInspectionItem">
+        <id property="id" column="id"/>
+        <result property="itemCode" column="item_code"/>
+        <result property="itemName" column="item_name"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="unit" column="unit"/>
+        <result property="standardValue" column="standard_value" jdbcType="DECIMAL"/>
+        <result property="upperLimit" column="upper_limit" jdbcType="DECIMAL"/>
+        <result property="lowerLimit" column="lower_limit" jdbcType="DECIMAL"/>
+        <result property="inspectionType" column="inspection_type"/>
+        <result property="testMethod" column="test_method"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, item_code, item_name, category_id, unit,
+        standard_value, upper_limit, lower_limit, inspection_type, test_method,
+        is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO quality_inspection_item (item_code, item_name, category_id, unit,
+                                             standard_value, upper_limit, lower_limit,
+                                             inspection_type, test_method)
+        VALUES (#{itemCode}, #{itemName}, #{categoryId}, #{unit},
+                #{standardValue,jdbcType=DECIMAL}, #{upperLimit,jdbcType=DECIMAL}, #{lowerLimit,jdbcType=DECIMAL},
+                #{inspectionType}, #{testMethod})
+    </insert>
+
+    <update id="update">
+        UPDATE quality_inspection_item
+        <set>
+            <if test="itemCode != null">item_code = #{itemCode},</if>
+            <if test="itemName != null">item_name = #{itemName},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="standardValue != null">standard_value = #{standardValue,jdbcType=DECIMAL},</if>
+            <if test="upperLimit != null">upper_limit = #{upperLimit,jdbcType=DECIMAL},</if>
+            <if test="lowerLimit != null">lower_limit = #{lowerLimit,jdbcType=DECIMAL},</if>
+            <if test="inspectionType != null">inspection_type = #{inspectionType},</if>
+            <if test="testMethod != null">test_method = #{testMethod},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE quality_inspection_item SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM quality_inspection_item
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM quality_inspection_item
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (item_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR item_code LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="categoryId != null">
+            AND category_id = #{categoryId}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM quality_inspection_item
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (item_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR item_code LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="categoryId != null">
+            AND category_id = #{categoryId}
+        </if>
+    </select>
+
+</mapper>

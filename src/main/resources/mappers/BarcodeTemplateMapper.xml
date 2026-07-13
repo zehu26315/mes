@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.barcode.mapper.BarcodeTemplateMapper">
+
+    <resultMap id="BaseResultMap" type="BarcodeTemplate">
+        <id property="id" column="id"/>
+        <result property="templateName" column="template_name"/>
+        <result property="templateCode" column="template_code"/>
+        <result property="templateContent" column="template_content"/>
+        <result property="width" column="width"/>
+        <result property="height" column="height"/>
+        <result property="description" column="description"/>
+        <result property="status" column="status"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, template_name, template_code, template_content, width, height,
+        description, status, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO barcode_template (template_name, template_code, template_content, width, height, description, status)
+        VALUES (#{templateName}, #{templateCode}, #{templateContent}, #{width}, #{height}, #{description}, #{status})
+    </insert>
+
+    <update id="update">
+        UPDATE barcode_template
+        <set>
+            <if test="templateName != null">template_name = #{templateName},</if>
+            <if test="templateCode != null">template_code = #{templateCode},</if>
+            <if test="templateContent != null">template_content = #{templateContent},</if>
+            <if test="width != null">width = #{width},</if>
+            <if test="height != null">height = #{height},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE barcode_template SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM barcode_template
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM barcode_template
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (template_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR template_code LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM barcode_template
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (template_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR template_code LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+</mapper>

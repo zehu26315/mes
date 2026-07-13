@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.erp.mapper.ErpSyncLogMapper">
+
+    <resultMap id="BaseResultMap" type="ErpSyncLog">
+        <id property="id" column="id"/>
+        <result property="syncType" column="sync_type"/>
+        <result property="dataType" column="data_type"/>
+        <result property="sourceSystem" column="source_system"/>
+        <result property="recordCount" column="record_count"/>
+        <result property="successCount" column="success_count"/>
+        <result property="failCount" column="fail_count"/>
+        <result property="status" column="status"/>
+        <result property="errorMsg" column="error_msg"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, sync_type, data_type, source_system, record_count, success_count,
+        fail_count, status, error_msg, start_time, end_time, create_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO erp_sync_log (sync_type, data_type, source_system, record_count, success_count,
+                                  fail_count, status, error_msg, start_time, end_time)
+        VALUES (#{syncType}, #{dataType}, #{sourceSystem}, #{recordCount}, #{successCount},
+                #{failCount}, #{status}, #{errorMsg}, #{startTime}, #{endTime})
+    </insert>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM erp_sync_log
+        WHERE 1 = 1
+        <if test="keyword != null and keyword != ''">
+            AND (sync_type LIKE CONCAT('%', #{keyword}, '%')
+                 OR data_type LIKE CONCAT('%', #{keyword}, '%')
+                 OR source_system LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM erp_sync_log
+        WHERE 1 = 1
+        <if test="keyword != null and keyword != ''">
+            AND (sync_type LIKE CONCAT('%', #{keyword}, '%')
+                 OR data_type LIKE CONCAT('%', #{keyword}, '%')
+                 OR source_system LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+    </select>
+
+</mapper>

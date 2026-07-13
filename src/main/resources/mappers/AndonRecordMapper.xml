@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.andon.mapper.AndonRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.mes.modules.andon.entity.AndonRecord">
+        <id property="id" column="id"/>
+        <result property="andonTypeId" column="andon_type_id"/>
+        <result property="reasonId" column="reason_id"/>
+        <result property="workCenter" column="work_center"/>
+        <result property="productionLine" column="production_line"/>
+        <result property="equipmentId" column="equipment_id"/>
+        <result property="workOrderId" column="work_order_id"/>
+        <result property="description" column="description"/>
+        <result property="status" column="status"/>
+        <result property="severity" column="severity"/>
+        <result property="reporter" column="reporter"/>
+        <result property="handler" column="handler"/>
+        <result property="reportTime" column="report_time"/>
+        <result property="confirmTime" column="confirm_time"/>
+        <result property="resolveTime" column="resolve_time"/>
+        <result property="resolveDesc" column="resolve_desc"/>
+        <result property="duration" column="duration"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, andon_type_id, reason_id, work_center, production_line,
+        equipment_id, work_order_id, description, status, severity,
+        reporter, handler, report_time, confirm_time, resolve_time,
+        resolve_desc, duration, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO andon_record (andon_type_id, reason_id, work_center, production_line,
+                                  equipment_id, work_order_id, description, status, severity,
+                                  reporter, handler, report_time)
+        VALUES (#{andonTypeId}, #{reasonId}, #{workCenter}, #{productionLine},
+                #{equipmentId}, #{workOrderId}, #{description}, #{status}, #{severity},
+                #{reporter}, #{handler}, #{reportTime})
+    </insert>
+
+    <update id="updateStatus">
+        UPDATE andon_record
+        SET status = #{status}
+        <if test="handler != null">, handler = #{handler}</if>
+        <if test="confirmTime != null">, confirm_time = #{confirmTime}</if>
+        <if test="resolveTime != null">, resolve_time = #{resolveTime}</if>
+        <if test="resolveDesc != null">, resolve_desc = #{resolveDesc}</if>
+        <if test="duration != null">, duration = #{duration}</if>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE andon_record SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM andon_record
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM andon_record
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (description LIKE CONCAT('%', #{keyword}, '%')
+                 OR work_center LIKE CONCAT('%', #{keyword}, '%')
+                 OR equipment_id LIKE CONCAT('%', #{keyword}, '%')
+                 OR work_order_id LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="andonTypeId != null">
+            AND andon_type_id = #{andonTypeId}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+        <if test="workCenter != null and workCenter != ''">
+            AND work_center = #{workCenter}
+        </if>
+        <if test="startTime != null">
+            AND report_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND report_time &lt;= #{endTime}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM andon_record
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (description LIKE CONCAT('%', #{keyword}, '%')
+                 OR work_center LIKE CONCAT('%', #{keyword}, '%')
+                 OR equipment_id LIKE CONCAT('%', #{keyword}, '%')
+                 OR work_order_id LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="andonTypeId != null">
+            AND andon_type_id = #{andonTypeId}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+        <if test="workCenter != null and workCenter != ''">
+            AND work_center = #{workCenter}
+        </if>
+        <if test="startTime != null">
+            AND report_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND report_time &lt;= #{endTime}
+        </if>
+    </select>
+
+    <select id="selectActive" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM andon_record
+        WHERE is_deleted = 0
+          AND status IN ('REPORTED', 'CONFIRMED')
+        ORDER BY
+            CASE status
+                WHEN 'REPORTED' THEN 1
+                WHEN 'CONFIRMED' THEN 2
+            END,
+            report_time ASC
+    </select>
+
+</mapper>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.quality.mapper.QualityPatrolMapper">
+
+    <resultMap id="BaseResultMap" type="QualityPatrol">
+        <id property="id" column="id"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="workOrderId" column="work_order_id"/>
+        <result property="productionLine" column="production_line"/>
+        <result property="processCode" column="process_code"/>
+        <result property="checkInterval" column="check_interval"/>
+        <result property="sampleSize" column="sample_size"/>
+        <result property="result" column="result"/>
+        <result property="inspector" column="inspector"/>
+        <result property="inspectionTime" column="inspection_time"/>
+        <result property="findDesc" column="find_desc"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, order_no, work_order_id, production_line, process_code,
+        check_interval, sample_size, result, inspector, inspection_time, find_desc,
+        is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO quality_patrol (order_no, work_order_id, production_line,
+                                     process_code, check_interval, sample_size,
+                                     result, inspector, inspection_time, find_desc)
+        VALUES (#{orderNo}, #{workOrderId}, #{productionLine},
+                #{processCode}, #{checkInterval}, #{sampleSize},
+                #{result}, #{inspector}, #{inspectionTime}, #{findDesc})
+    </insert>
+
+    <update id="update">
+        UPDATE quality_patrol
+        <set>
+            <if test="workOrderId != null">work_order_id = #{workOrderId},</if>
+            <if test="productionLine != null">production_line = #{productionLine},</if>
+            <if test="processCode != null">process_code = #{processCode},</if>
+            <if test="checkInterval != null">check_interval = #{checkInterval},</if>
+            <if test="sampleSize != null">sample_size = #{sampleSize},</if>
+            <if test="result != null">result = #{result},</if>
+            <if test="inspector != null">inspector = #{inspector},</if>
+            <if test="inspectionTime != null">inspection_time = #{inspectionTime},</if>
+            <if test="findDesc != null">find_desc = #{findDesc},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE quality_patrol SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM quality_patrol
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM quality_patrol
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (order_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR production_line LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="workOrderId != null">
+            AND work_order_id = #{workOrderId}
+        </if>
+        <if test="result != null and result != ''">
+            AND result = #{result}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM quality_patrol
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (order_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR production_line LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="workOrderId != null">
+            AND work_order_id = #{workOrderId}
+        </if>
+        <if test="result != null and result != ''">
+            AND result = #{result}
+        </if>
+    </select>
+
+</mapper>

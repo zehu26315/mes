@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.plan.mapper.PlanDailyMapper">
+
+    <resultMap id="BaseResultMap" type="PlanDaily">
+        <id property="id" column="id"/>
+        <result property="planNo" column="plan_no"/>
+        <result property="mpsId" column="mps_id"/>
+        <result property="planDate" column="plan_date"/>
+        <result property="productCode" column="product_code"/>
+        <result property="productName" column="product_name"/>
+        <result property="planQty" column="plan_qty"/>
+        <result property="actualQty" column="actual_qty"/>
+        <result property="productionLine" column="production_line"/>
+        <result property="shift" column="shift"/>
+        <result property="workshop" column="workshop"/>
+        <result property="status" column="status"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, plan_no, mps_id, plan_date, product_code, product_name,
+        plan_qty, actual_qty, production_line, shift, workshop,
+        status, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO plan_daily (plan_no, mps_id, plan_date, product_code, product_name,
+                                plan_qty, actual_qty, production_line, shift, workshop, status)
+        VALUES (#{planNo}, #{mpsId}, #{planDate}, #{productCode}, #{productName},
+                #{planQty}, #{actualQty}, #{productionLine}, #{shift}, #{workshop}, #{status})
+    </insert>
+
+    <update id="update">
+        UPDATE plan_daily
+        <set>
+            <if test="mpsId != null">mps_id = #{mpsId},</if>
+            <if test="planDate != null">plan_date = #{planDate},</if>
+            <if test="productCode != null">product_code = #{productCode},</if>
+            <if test="productName != null">product_name = #{productName},</if>
+            <if test="planQty != null">plan_qty = #{planQty},</if>
+            <if test="actualQty != null">actual_qty = #{actualQty},</if>
+            <if test="productionLine != null">production_line = #{productionLine},</if>
+            <if test="shift != null">shift = #{shift},</if>
+            <if test="workshop != null">workshop = #{workshop},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE plan_daily SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM plan_daily
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM plan_daily
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (plan_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_name LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="planDate != null">
+            AND plan_date = #{planDate}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM plan_daily
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (plan_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_name LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="planDate != null">
+            AND plan_date = #{planDate}
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,33 @@
+package com.example.mes.modules.warehouse.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class WhInbound {
+    private Long id;
+    private String inboundNo;
+    private String inboundType;
+    private Long warehouseId;
+    private String materialCode;
+    private String materialName;
+    private BigDecimal qty;
+    private String unit;
+    private String batchNo;
+    private String supplier;
+    private String sourceOrderNo;
+    private String status;
+    private String operator;
+    private LocalDateTime inboundTime;
+    private Integer isDeleted;
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
+}

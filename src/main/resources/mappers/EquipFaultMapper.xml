@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.equipment.mapper.EquipFaultMapper">
+
+    <resultMap id="BaseResultMap" type="EquipFault">
+        <id property="id" column="id"/>
+        <result property="equipId" column="equip_id"/>
+        <result property="faultCode" column="fault_code"/>
+        <result property="faultName" column="fault_name"/>
+        <result property="faultDesc" column="fault_desc"/>
+        <result property="faultCategory" column="fault_category"/>
+        <result property="reasonAnalysis" column="reason_analysis"/>
+        <result property="solution" column="solution"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, equip_id, fault_code, fault_name, fault_desc,
+        fault_category, reason_analysis, solution, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO equip_fault (equip_id, fault_code, fault_name, fault_desc, fault_category, reason_analysis, solution)
+        VALUES (#{equipId}, #{faultCode}, #{faultName}, #{faultDesc}, #{faultCategory}, #{reasonAnalysis}, #{solution})
+    </insert>
+
+    <update id="update">
+        UPDATE equip_fault
+        <set>
+            <if test="equipId != null">equip_id = #{equipId},</if>
+            <if test="faultCode != null">fault_code = #{faultCode},</if>
+            <if test="faultName != null">fault_name = #{faultName},</if>
+            <if test="faultDesc != null">fault_desc = #{faultDesc},</if>
+            <if test="faultCategory != null">fault_category = #{faultCategory},</if>
+            <if test="reasonAnalysis != null">reason_analysis = #{reasonAnalysis},</if>
+            <if test="solution != null">solution = #{solution},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE equip_fault SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM equip_fault
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM equip_fault
+        WHERE is_deleted = 0
+        ORDER BY id DESC
+    </select>
+
+</mapper>

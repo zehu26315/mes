@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.equipment.mapper.EquipOeeRecordMapper">
+
+    <resultMap id="BaseResultMap" type="EquipOeeRecord">
+        <id property="id" column="id"/>
+        <result property="equipId" column="equip_id"/>
+        <result property="recordDate" column="record_date"/>
+        <result property="shift" column="shift"/>
+        <result property="planRuntime" column="plan_runtime"/>
+        <result property="actualRuntime" column="actual_runtime"/>
+        <result property="downtime" column="downtime"/>
+        <result property="outputQty" column="output_qty" jdbcType="DECIMAL"/>
+        <result property="defectQty" column="defect_qty" jdbcType="DECIMAL"/>
+        <result property="availability" column="availability" jdbcType="DECIMAL"/>
+        <result property="performance" column="performance" jdbcType="DECIMAL"/>
+        <result property="quality" column="quality" jdbcType="DECIMAL"/>
+        <result property="oee" column="oee" jdbcType="DECIMAL"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, equip_id, record_date, shift, plan_runtime,
+        actual_runtime, downtime, output_qty, defect_qty, availability,
+        performance, quality, oee, create_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO equip_oee_record (equip_id, record_date, shift, plan_runtime,
+            actual_runtime, downtime, output_qty, defect_qty, availability,
+            performance, quality, oee)
+        VALUES (#{equipId}, #{recordDate}, #{shift}, #{planRuntime},
+            #{actualRuntime}, #{downtime}, #{outputQty}, #{defectQty}, #{availability},
+            #{performance}, #{quality}, #{oee})
+    </insert>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM equip_oee_record
+        WHERE 1 = 1
+        <if test="equipId != null">
+            AND equip_id = #{equipId}
+        </if>
+        <if test="startDate != null">
+            AND record_date &gt;= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND record_date &lt;= #{endDate}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM equip_oee_record
+        WHERE 1 = 1
+        <if test="equipId != null">
+            AND equip_id = #{equipId}
+        </if>
+        <if test="startDate != null">
+            AND record_date &gt;= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND record_date &lt;= #{endDate}
+        </if>
+    </select>
+
+</mapper>

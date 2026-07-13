@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.equipment.mapper.EquipAssetMapper">
+
+    <resultMap id="BaseResultMap" type="EquipAsset">
+        <id property="id" column="id"/>
+        <result property="equipCode" column="equip_code"/>
+        <result property="equipName" column="equip_name"/>
+        <result property="equipModel" column="equip_model"/>
+        <result property="equipSpec" column="equip_spec"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="manufacturerId" column="manufacturer_id"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="productionLine" column="production_line"/>
+        <result property="workCenter" column="work_center"/>
+        <result property="location" column="location"/>
+        <result property="serialNo" column="serial_no"/>
+        <result property="status" column="status"/>
+        <result property="purchaseDate" column="purchase_date"/>
+        <result property="warrantyEnd" column="warranty_end"/>
+        <result property="serviceLife" column="service_life"/>
+        <result property="supplier" column="supplier"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, equip_code, equip_name, equip_model, equip_spec,
+        category_id, manufacturer_id, department_id, production_line, work_center,
+        location, serial_no, status, purchase_date, warranty_end, service_life,
+        supplier, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO equip_asset (equip_code, equip_name, equip_model, equip_spec,
+            category_id, manufacturer_id, department_id, production_line, work_center,
+            location, serial_no, status, purchase_date, warranty_end, service_life, supplier)
+        VALUES (#{equipCode}, #{equipName}, #{equipModel}, #{equipSpec},
+            #{categoryId}, #{manufacturerId}, #{departmentId}, #{productionLine}, #{workCenter},
+            #{location}, #{serialNo}, #{status}, #{purchaseDate}, #{warrantyEnd}, #{serviceLife}, #{supplier})
+    </insert>
+
+    <update id="update">
+        UPDATE equip_asset
+        <set>
+            <if test="equipName != null">equip_name = #{equipName},</if>
+            <if test="equipModel != null">equip_model = #{equipModel},</if>
+            <if test="equipSpec != null">equip_spec = #{equipSpec},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="manufacturerId != null">manufacturer_id = #{manufacturerId},</if>
+            <if test="departmentId != null">department_id = #{departmentId},</if>
+            <if test="productionLine != null">production_line = #{productionLine},</if>
+            <if test="workCenter != null">work_center = #{workCenter},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="serialNo != null">serial_no = #{serialNo},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="purchaseDate != null">purchase_date = #{purchaseDate},</if>
+            <if test="warrantyEnd != null">warranty_end = #{warrantyEnd},</if>
+            <if test="serviceLife != null">service_life = #{serviceLife},</if>
+            <if test="supplier != null">supplier = #{supplier},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE equip_asset SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE equip_asset SET status = #{status} WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM equip_asset
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM equip_asset
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (equip_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR equip_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR serial_no LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="categoryId != null">
+            AND category_id = #{categoryId}
+        </if>
+        <if test="productionLine != null and productionLine != ''">
+            AND production_line = #{productionLine}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM equip_asset
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (equip_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR equip_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR serial_no LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="categoryId != null">
+            AND category_id = #{categoryId}
+        </if>
+        <if test="productionLine != null and productionLine != ''">
+            AND production_line = #{productionLine}
+        </if>
+    </select>
+
+</mapper>

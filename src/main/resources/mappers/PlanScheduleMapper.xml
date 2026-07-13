@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.plan.mapper.PlanScheduleMapper">
+
+    <resultMap id="BaseResultMap" type="PlanSchedule">
+        <id property="id" column="id"/>
+        <result property="scheduleNo" column="schedule_no"/>
+        <result property="workOrderId" column="work_order_id"/>
+        <result property="productCode" column="product_code"/>
+        <result property="processCode" column="process_code"/>
+        <result property="equipmentId" column="equipment_id"/>
+        <result property="productionLine" column="production_line"/>
+        <result property="planStartTime" column="plan_start_time"/>
+        <result property="planEndTime" column="plan_end_time"/>
+        <result property="planQty" column="plan_qty"/>
+        <result property="priority" column="priority"/>
+        <result property="status" column="status"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, schedule_no, work_order_id, product_code, process_code, equipment_id,
+        production_line, plan_start_time, plan_end_time, plan_qty, priority,
+        status, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO plan_schedule (schedule_no, work_order_id, product_code, process_code,
+                                    equipment_id, production_line, plan_start_time, plan_end_time,
+                                    plan_qty, priority, status)
+        VALUES (#{scheduleNo}, #{workOrderId}, #{productCode}, #{processCode},
+                #{equipmentId}, #{productionLine}, #{planStartTime}, #{planEndTime},
+                #{planQty}, #{priority}, #{status})
+    </insert>
+
+    <update id="update">
+        UPDATE plan_schedule
+        <set>
+            <if test="workOrderId != null">work_order_id = #{workOrderId},</if>
+            <if test="productCode != null">product_code = #{productCode},</if>
+            <if test="processCode != null">process_code = #{processCode},</if>
+            <if test="equipmentId != null">equipment_id = #{equipmentId},</if>
+            <if test="productionLine != null">production_line = #{productionLine},</if>
+            <if test="planStartTime != null">plan_start_time = #{planStartTime},</if>
+            <if test="planEndTime != null">plan_end_time = #{planEndTime},</if>
+            <if test="planQty != null">plan_qty = #{planQty},</if>
+            <if test="priority != null">priority = #{priority},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE plan_schedule SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM plan_schedule
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM plan_schedule
+        WHERE is_deleted = 0
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM plan_schedule
+        WHERE is_deleted = 0
+    </select>
+
+</mapper>

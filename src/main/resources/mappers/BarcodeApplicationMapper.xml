@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.barcode.mapper.BarcodeApplicationMapper">
+
+    <resultMap id="BaseResultMap" type="BarcodeApplication">
+        <id property="id" column="id"/>
+        <result property="applicationName" column="application_name"/>
+        <result property="ruleId" column="rule_id"/>
+        <result property="templateId" column="template_id"/>
+        <result property="productCode" column="product_code"/>
+        <result property="triggerPoint" column="trigger_point"/>
+        <result property="printQty" column="print_qty"/>
+        <result property="status" column="status"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, application_name, rule_id, template_id, product_code, trigger_point,
+        print_qty, status, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO barcode_application (application_name, rule_id, template_id, product_code, trigger_point, print_qty, status)
+        VALUES (#{applicationName}, #{ruleId}, #{templateId}, #{productCode}, #{triggerPoint}, #{printQty}, #{status})
+    </insert>
+
+    <update id="update">
+        UPDATE barcode_application
+        <set>
+            <if test="applicationName != null">application_name = #{applicationName},</if>
+            <if test="ruleId != null">rule_id = #{ruleId},</if>
+            <if test="templateId != null">template_id = #{templateId},</if>
+            <if test="productCode != null">product_code = #{productCode},</if>
+            <if test="triggerPoint != null">trigger_point = #{triggerPoint},</if>
+            <if test="printQty != null">print_qty = #{printQty},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE barcode_application SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM barcode_application
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM barcode_application
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (application_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_code LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM barcode_application
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (application_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_code LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+</mapper>

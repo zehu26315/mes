@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.production.mapper.ProdReportingMapper">
+
+    <resultMap id="BaseResultMap" type="ProdReporting">
+        <id property="id" column="id"/>
+        <result property="workOrderId" column="work_order_id"/>
+        <result property="dispatchId" column="dispatch_id"/>
+        <result property="processCode" column="process_code"/>
+        <result property="processName" column="process_name"/>
+        <result property="workCenter" column="work_center"/>
+        <result property="equipmentId" column="equipment_id"/>
+        <result property="worker" column="worker"/>
+        <result property="shift" column="shift"/>
+        <result property="reportType" column="report_type"/>
+        <result property="totalQty" column="total_qty" jdbcType="DECIMAL"/>
+        <result property="goodQty" column="good_qty" jdbcType="DECIMAL"/>
+        <result property="defectQty" column="defect_qty" jdbcType="DECIMAL"/>
+        <result property="defectReason" column="defect_reason"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="duration" column="duration"/>
+        <result property="remark" column="remark"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, work_order_id, dispatch_id, process_code, process_name, work_center, equipment_id,
+        worker, shift, report_type, total_qty, good_qty, defect_qty, defect_reason,
+        start_time, end_time, duration, remark, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO prod_reporting (work_order_id, dispatch_id, process_code, process_name,
+            work_center, equipment_id, worker, shift, report_type, total_qty, good_qty,
+            defect_qty, defect_reason, start_time, end_time, duration, remark)
+        VALUES (#{workOrderId}, #{dispatchId}, #{processCode}, #{processName},
+            #{workCenter}, #{equipmentId}, #{worker}, #{shift}, #{reportType}, #{totalQty},
+            #{goodQty}, #{defectQty}, #{defectReason}, #{startTime}, #{endTime}, #{duration}, #{remark})
+    </insert>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM prod_reporting
+        WHERE is_deleted = 0
+        <if test="workOrderId != null">
+            AND work_order_id = #{workOrderId}
+        </if>
+        <if test="processCode != null and processCode != ''">
+            AND process_code = #{processCode}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM prod_reporting
+        WHERE is_deleted = 0
+        <if test="workOrderId != null">
+            AND work_order_id = #{workOrderId}
+        </if>
+        <if test="processCode != null and processCode != ''">
+            AND process_code = #{processCode}
+        </if>
+    </select>
+
+    <select id="selectCompletions" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM prod_reporting
+        WHERE report_type = 'COMPLETE' AND is_deleted = 0
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countCompletions" resultType="long">
+        SELECT COUNT(*)
+        FROM prod_reporting
+        WHERE report_type = 'COMPLETE' AND is_deleted = 0
+    </select>
+
+</mapper>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.quality.mapper.QualityInspectionOrderMapper">
+
+    <resultMap id="BaseResultMap" type="QualityInspectionOrder">
+        <id property="id" column="id"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="orderType" column="order_type"/>
+        <result property="sourceOrderNo" column="source_order_no"/>
+        <result property="productCode" column="product_code"/>
+        <result property="productName" column="product_name"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="sampleQty" column="sample_qty"/>
+        <result property="defectQty" column="defect_qty"/>
+        <result property="result" column="result"/>
+        <result property="inspector" column="inspector"/>
+        <result property="inspectionTime" column="inspection_time"/>
+        <result property="remark" column="remark"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, order_no, order_type, source_order_no, product_code, product_name,
+        batch_no, sample_qty, defect_qty, result, inspector, inspection_time, remark,
+        is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO quality_inspection_order (order_no, order_type, source_order_no,
+                                               product_code, product_name, batch_no,
+                                               sample_qty, defect_qty, result,
+                                               inspector, inspection_time, remark)
+        VALUES (#{orderNo}, #{orderType}, #{sourceOrderNo},
+                #{productCode}, #{productName}, #{batchNo},
+                #{sampleQty}, #{defectQty}, #{result},
+                #{inspector}, #{inspectionTime}, #{remark})
+    </insert>
+
+    <update id="update">
+        UPDATE quality_inspection_order
+        <set>
+            <if test="orderType != null">order_type = #{orderType},</if>
+            <if test="sourceOrderNo != null">source_order_no = #{sourceOrderNo},</if>
+            <if test="productCode != null">product_code = #{productCode},</if>
+            <if test="productName != null">product_name = #{productName},</if>
+            <if test="batchNo != null">batch_no = #{batchNo},</if>
+            <if test="sampleQty != null">sample_qty = #{sampleQty},</if>
+            <if test="defectQty != null">defect_qty = #{defectQty},</if>
+            <if test="result != null">result = #{result},</if>
+            <if test="inspector != null">inspector = #{inspector},</if>
+            <if test="inspectionTime != null">inspection_time = #{inspectionTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE quality_inspection_order SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM quality_inspection_order
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM quality_inspection_order
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (order_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_name LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="orderType != null and orderType != ''">
+            AND order_type = #{orderType}
+        </if>
+        <if test="result != null and result != ''">
+            AND result = #{result}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM quality_inspection_order
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (order_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_name LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="orderType != null and orderType != ''">
+            AND order_type = #{orderType}
+        </if>
+        <if test="result != null and result != ''">
+            AND result = #{result}
+        </if>
+    </select>
+
+</mapper>

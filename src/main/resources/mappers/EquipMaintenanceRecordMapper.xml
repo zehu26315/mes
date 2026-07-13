@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.equipment.mapper.EquipMaintenanceRecordMapper">
+
+    <resultMap id="BaseResultMap" type="EquipMaintenanceRecord">
+        <id property="id" column="id"/>
+        <result property="planId" column="plan_id"/>
+        <result property="equipId" column="equip_id"/>
+        <result property="executeDate" column="execute_date"/>
+        <result property="result" column="result"/>
+        <result property="executor" column="executor"/>
+        <result property="remark" column="remark"/>
+        <result property="cost" column="cost" jdbcType="DECIMAL"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, plan_id, equip_id, execute_date, result,
+        executor, remark, cost, create_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO equip_maintenance_record (plan_id, equip_id, execute_date, result, executor, remark, cost)
+        VALUES (#{planId}, #{equipId}, #{executeDate}, #{result}, #{executor}, #{remark}, #{cost})
+    </insert>
+
+    <update id="completePlan">
+        UPDATE equip_maintenance_plan SET status = 'COMPLETED' WHERE id = #{planId}
+    </update>
+
+    <select id="selectByEquipId" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM equip_maintenance_record
+        WHERE equip_id = #{equipId}
+        ORDER BY id DESC
+    </select>
+
+</mapper>

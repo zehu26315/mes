@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.system.mapper.SysMenuMapper">
+
+    <resultMap id="BaseResultMap" type="SysMenu">
+        <id property="id" column="id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="menuName" column="menu_name"/>
+        <result property="menuCode" column="menu_code"/>
+        <result property="menuType" column="menu_type"/>
+        <result property="url" column="url"/>
+        <result property="icon" column="icon"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="visible" column="visible"/>
+        <result property="status" column="status"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, parent_id, menu_name, menu_code, menu_type, url, icon,
+        sort_order, visible, status, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_menu (parent_id, menu_name, menu_code, menu_type, url, icon,
+                              sort_order, visible, status)
+        VALUES (#{parentId}, #{menuName}, #{menuCode}, #{menuType}, #{url}, #{icon},
+                #{sortOrder}, #{visible}, #{status})
+    </insert>
+
+    <update id="update">
+        UPDATE sys_menu
+        <set>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="menuName != null">menu_name = #{menuName},</if>
+            <if test="menuCode != null">menu_code = #{menuCode},</if>
+            <if test="menuType != null">menu_type = #{menuType},</if>
+            <if test="url != null">url = #{url},</if>
+            <if test="icon != null">icon = #{icon},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            <if test="visible != null">visible = #{visible},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE sys_menu SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM sys_menu
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM sys_menu
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (menu_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR menu_code LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY sort_order ASC, id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM sys_menu
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (menu_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR menu_code LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.quality.mapper.QualityDefectRecordMapper">
+
+    <resultMap id="BaseResultMap" type="QualityDefectRecord">
+        <id property="id" column="id"/>
+        <result property="workOrderId" column="work_order_id"/>
+        <result property="productCode" column="product_code"/>
+        <result property="processCode" column="process_code"/>
+        <result property="defectType" column="defect_type"/>
+        <result property="defectLocation" column="defect_location"/>
+        <result property="defectDesc" column="defect_desc"/>
+        <result property="defectQty" column="defect_qty"/>
+        <result property="rootCause" column="root_cause"/>
+        <result property="correctiveAction" column="corrective_action"/>
+        <result property="reporter" column="reporter"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, work_order_id, product_code, process_code,
+        defect_type, defect_location, defect_desc, defect_qty,
+        root_cause, corrective_action, reporter, create_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO quality_defect_record (work_order_id, product_code, process_code,
+                                            defect_type, defect_location, defect_desc,
+                                            defect_qty, root_cause, corrective_action, reporter)
+        VALUES (#{workOrderId}, #{productCode}, #{processCode},
+                #{defectType}, #{defectLocation}, #{defectDesc},
+                #{defectQty}, #{rootCause}, #{correctiveAction}, #{reporter})
+    </insert>
+
+    <update id="update">
+        UPDATE quality_defect_record
+        <set>
+            <if test="workOrderId != null">work_order_id = #{workOrderId},</if>
+            <if test="productCode != null">product_code = #{productCode},</if>
+            <if test="processCode != null">process_code = #{processCode},</if>
+            <if test="defectType != null">defect_type = #{defectType},</if>
+            <if test="defectLocation != null">defect_location = #{defectLocation},</if>
+            <if test="defectDesc != null">defect_desc = #{defectDesc},</if>
+            <if test="defectQty != null">defect_qty = #{defectQty},</if>
+            <if test="rootCause != null">root_cause = #{rootCause},</if>
+            <if test="correctiveAction != null">corrective_action = #{correctiveAction},</if>
+            <if test="reporter != null">reporter = #{reporter},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM quality_defect_record WHERE id = #{id}
+    </delete>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM quality_defect_record
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM quality_defect_record
+        WHERE 1 = 1
+        <if test="keyword != null and keyword != ''">
+            AND (product_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR defect_desc LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="workOrderId != null">
+            AND work_order_id = #{workOrderId}
+        </if>
+        <if test="defectType != null and defectType != ''">
+            AND defect_type = #{defectType}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM quality_defect_record
+        WHERE 1 = 1
+        <if test="keyword != null and keyword != ''">
+            AND (product_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR defect_desc LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="workOrderId != null">
+            AND work_order_id = #{workOrderId}
+        </if>
+        <if test="defectType != null and defectType != ''">
+            AND defect_type = #{defectType}
+        </if>
+    </select>
+
+</mapper>

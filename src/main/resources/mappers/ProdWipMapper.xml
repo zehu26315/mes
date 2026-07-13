@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.production.mapper.ProdWipMapper">
+
+    <resultMap id="BaseResultMap" type="ProdWip">
+        <id property="id" column="id"/>
+        <result property="workOrderId" column="work_order_id"/>
+        <result property="productCode" column="product_code"/>
+        <result property="productName" column="product_name"/>
+        <result property="processCode" column="process_code"/>
+        <result property="processName" column="process_name"/>
+        <result property="workCenter" column="work_center"/>
+        <result property="wipQty" column="wip_qty" jdbcType="DECIMAL"/>
+        <result property="holdQty" column="hold_qty" jdbcType="DECIMAL"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, work_order_id, product_code, product_name, process_code, process_name,
+        work_center, wip_qty, hold_qty, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO prod_wip (work_order_id, product_code, product_name, process_code,
+            process_name, work_center, wip_qty, hold_qty)
+        VALUES (#{workOrderId}, #{productCode}, #{productName}, #{processCode},
+            #{processName}, #{workCenter}, #{wipQty}, #{holdQty})
+    </insert>
+
+    <update id="update">
+        UPDATE prod_wip
+        <set>
+            <if test="productCode != null">product_code = #{productCode},</if>
+            <if test="productName != null">product_name = #{productName},</if>
+            <if test="processName != null">process_name = #{processName},</if>
+            <if test="workCenter != null">work_center = #{workCenter},</if>
+            <if test="wipQty != null">wip_qty = #{wipQty},</if>
+            <if test="holdQty != null">hold_qty = #{holdQty},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateQty">
+        UPDATE prod_wip SET wip_qty = #{wipQty} WHERE id = #{id}
+    </update>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM prod_wip
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM prod_wip
+    </select>
+
+    <select id="selectByProcessCode" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM prod_wip
+        WHERE process_code = #{processCode}
+    </select>
+
+</mapper>

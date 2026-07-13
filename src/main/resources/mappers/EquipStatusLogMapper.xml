@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.equipment.mapper.EquipStatusLogMapper">
+
+    <resultMap id="BaseResultMap" type="EquipStatusLog">
+        <id property="id" column="id"/>
+        <result property="equipId" column="equip_id"/>
+        <result property="fromStatus" column="from_status"/>
+        <result property="toStatus" column="to_status"/>
+        <result property="reason" column="reason"/>
+        <result property="operator" column="operator"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, equip_id, from_status, to_status, reason, operator, create_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO equip_status_log (equip_id, from_status, to_status, reason, operator)
+        VALUES (#{equipId}, #{fromStatus}, #{toStatus}, #{reason}, #{operator})
+    </insert>
+
+</mapper>

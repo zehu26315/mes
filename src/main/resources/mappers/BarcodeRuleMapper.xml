@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.barcode.mapper.BarcodeRuleMapper">
+
+    <resultMap id="BaseResultMap" type="BarcodeRule">
+        <id property="id" column="id"/>
+        <result property="ruleName" column="rule_name"/>
+        <result property="ruleCode" column="rule_code"/>
+        <result property="barcodeTypeId" column="barcode_type_id"/>
+        <result property="prefix" column="prefix"/>
+        <result property="dateFormat" column="date_format"/>
+        <result property="serialLength" column="serial_length"/>
+        <result property="separator" column="separator"/>
+        <result property="status" column="status"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, rule_name, rule_code, barcode_type_id, prefix, date_format,
+        serial_length, separator, status, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO barcode_rule (rule_name, rule_code, barcode_type_id, prefix, date_format, serial_length, separator, status)
+        VALUES (#{ruleName}, #{ruleCode}, #{barcodeTypeId}, #{prefix}, #{dateFormat}, #{serialLength}, #{separator}, #{status})
+    </insert>
+
+    <update id="update">
+        UPDATE barcode_rule
+        <set>
+            <if test="ruleName != null">rule_name = #{ruleName},</if>
+            <if test="ruleCode != null">rule_code = #{ruleCode},</if>
+            <if test="barcodeTypeId != null">barcode_type_id = #{barcodeTypeId},</if>
+            <if test="prefix != null">prefix = #{prefix},</if>
+            <if test="dateFormat != null">date_format = #{dateFormat},</if>
+            <if test="serialLength != null">serial_length = #{serialLength},</if>
+            <if test="separator != null">separator = #{separator},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE barcode_rule SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM barcode_rule
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM barcode_rule
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (rule_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR rule_code LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM barcode_rule
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (rule_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR rule_code LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+</mapper>

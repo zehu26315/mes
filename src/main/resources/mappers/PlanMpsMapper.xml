@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.plan.mapper.PlanMpsMapper">
+
+    <resultMap id="BaseResultMap" type="PlanMps">
+        <id property="id" column="id"/>
+        <result property="planNo" column="plan_no"/>
+        <result property="planName" column="plan_name"/>
+        <result property="planPeriod" column="plan_period"/>
+        <result property="planDate" column="plan_date"/>
+        <result property="productCode" column="product_code"/>
+        <result property="productName" column="product_name"/>
+        <result property="planQty" column="plan_qty"/>
+        <result property="completedQty" column="completed_qty"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="status" column="status"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, plan_no, plan_name, plan_period, plan_date,
+        product_code, product_name, plan_qty, completed_qty,
+        start_date, end_date, status, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO plan_mps (plan_no, plan_name, plan_period, plan_date,
+                              product_code, product_name, plan_qty, completed_qty,
+                              start_date, end_date, status)
+        VALUES (#{planNo}, #{planName}, #{planPeriod}, #{planDate},
+                #{productCode}, #{productName}, #{planQty}, #{completedQty},
+                #{startDate}, #{endDate}, #{status})
+    </insert>
+
+    <update id="update">
+        UPDATE plan_mps
+        <set>
+            <if test="planName != null">plan_name = #{planName},</if>
+            <if test="planPeriod != null">plan_period = #{planPeriod},</if>
+            <if test="planDate != null">plan_date = #{planDate},</if>
+            <if test="productCode != null">product_code = #{productCode},</if>
+            <if test="productName != null">product_name = #{productName},</if>
+            <if test="planQty != null">plan_qty = #{planQty},</if>
+            <if test="completedQty != null">completed_qty = #{completedQty},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE plan_mps SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM plan_mps
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM plan_mps
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (plan_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR plan_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_name LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM plan_mps
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (plan_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR plan_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_name LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+</mapper>

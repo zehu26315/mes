@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.equipment.mapper.EquipInspectionRecordMapper">
+
+    <resultMap id="BaseResultMap" type="EquipInspectionRecord">
+        <id property="id" column="id"/>
+        <result property="planId" column="plan_id"/>
+        <result property="equipId" column="equip_id"/>
+        <result property="executeDate" column="execute_date"/>
+        <result property="checkResult" column="check_result"/>
+        <result property="isNormal" column="is_normal"/>
+        <result property="inspector" column="inspector"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, plan_id, equip_id, execute_date, check_result,
+        is_normal, inspector, remark, create_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO equip_inspection_record (plan_id, equip_id, execute_date, check_result, is_normal, inspector, remark)
+        VALUES (#{planId}, #{equipId}, #{executeDate}, #{checkResult}, #{isNormal}, #{inspector}, #{remark})
+    </insert>
+
+    <select id="selectByEquipId" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM equip_inspection_record
+        WHERE equip_id = #{equipId}
+        ORDER BY id DESC
+    </select>
+
+</mapper>

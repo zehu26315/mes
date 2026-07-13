@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.masterdata.mapper.MdProductMapper">
+
+    <resultMap id="BaseResultMap" type="MdProduct">
+        <id property="id" column="id"/>
+        <result property="productCode" column="product_code"/>
+        <result property="productName" column="product_name"/>
+        <result property="productSpec" column="product_spec"/>
+        <result property="productType" column="product_type"/>
+        <result property="unit" column="unit"/>
+        <result property="category" column="category"/>
+        <result property="voltage" column="voltage"/>
+        <result property="capacity" column="capacity"/>
+        <result property="weight" column="weight" jdbcType="DECIMAL"/>
+        <result property="sizeDiameter" column="size_diameter" jdbcType="DECIMAL"/>
+        <result property="sizeHeight" column="size_height" jdbcType="DECIMAL"/>
+        <result property="routeId" column="route_id"/>
+        <result property="status" column="status"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, product_code, product_name, product_spec, product_type, unit, category,
+        voltage, capacity, weight, size_diameter, size_height, route_id,
+        status, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO md_product (product_code, product_name, product_spec, product_type, unit,
+                                category, voltage, capacity, weight, size_diameter, size_height,
+                                route_id, status)
+        VALUES (#{productCode}, #{productName}, #{productSpec}, #{productType}, #{unit},
+                #{category}, #{voltage}, #{capacity}, #{weight}, #{sizeDiameter}, #{sizeHeight},
+                #{routeId}, #{status})
+    </insert>
+
+    <update id="update">
+        UPDATE md_product
+        <set>
+            <if test="productName != null">product_name = #{productName},</if>
+            <if test="productSpec != null">product_spec = #{productSpec},</if>
+            <if test="productType != null">product_type = #{productType},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="category != null">category = #{category},</if>
+            <if test="voltage != null">voltage = #{voltage},</if>
+            <if test="capacity != null">capacity = #{capacity},</if>
+            <if test="weight != null">weight = #{weight},</if>
+            <if test="sizeDiameter != null">size_diameter = #{sizeDiameter},</if>
+            <if test="sizeHeight != null">size_height = #{sizeHeight},</if>
+            <if test="routeId != null">route_id = #{routeId},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE md_product SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM md_product
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM md_product
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (product_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_spec LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM md_product
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (product_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_spec LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+</mapper>
