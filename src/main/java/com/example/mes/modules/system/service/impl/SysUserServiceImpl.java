@@ -1,12 +1,15 @@
 package com.example.mes.modules.system.service.impl;
 
 import com.example.mes.common.response.PageResult;
+import com.example.mes.config.CacheNames;
 import com.example.mes.modules.system.entity.SysUser;
 import com.example.mes.modules.system.entity.SysUserRole;
 import com.example.mes.modules.system.mapper.SysUserMapper;
 import com.example.mes.modules.system.mapper.SysUserRoleMapper;
 import com.example.mes.modules.system.service.SysUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,7 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = CacheNames.SYS_USER_LIST, allEntries = true)
     public SysUser createUser(SysUser user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (user.getStatus() == null) {
@@ -35,6 +39,7 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = {CacheNames.SYS_USER, CacheNames.SYS_USER_LIST}, allEntries = true)
     public SysUser updateUser(SysUser user) {
         // 不允许修改密码和用户名
         user.setPassword(null);
@@ -45,11 +50,13 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = {CacheNames.SYS_USER, CacheNames.SYS_USER_LIST}, allEntries = true)
     public void deleteUser(Long id) {
         sysUserMapper.deleteById(id);
     }
 
     @Override
+    @Cacheable(value = CacheNames.SYS_USER, key = "#id", unless = "#result == null")
     public SysUser getUserById(Long id) {
         return sysUserMapper.selectById(id);
     }
@@ -64,6 +71,7 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = CacheNames.SYS_USER, key = "#userId")
     public void assignRoles(Long userId, List<Long> roleIds) {
         sysUserRoleMapper.deleteByUserId(userId);
         if (roleIds != null && !roleIds.isEmpty()) {

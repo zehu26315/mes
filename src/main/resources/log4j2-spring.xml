@@ -17,11 +17,11 @@
         <Logger name="org.hibernate" level="WARN"/>
         <Logger name="org.mybatis" level="DEBUG"/>
 
-        <!-- 项目自身日志 -->
-        <Logger name="com.example.mes" level="DEBUG"/>
+        <!-- 项目自身日志（读取 .env 中的 LOG_MES） -->
+        <Logger name="com.example.mes" level="${env:LOG_MES:-DEBUG}"/>
 
-        <!-- 根日志 -->
-        <Root level="INFO">
+        <!-- 根日志（读取 .env 中的 LOG_ROOT） -->
+        <Root level="${env:LOG_ROOT:-INFO}">
             <AppenderRef ref="Console"/>
         </Root>
     </Loggers>
