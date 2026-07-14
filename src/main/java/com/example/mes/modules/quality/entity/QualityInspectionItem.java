@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -19,9 +18,9 @@ public class QualityInspectionItem {
     private String itemName;
     private Long categoryId;
     private String unit;
-    private BigDecimal standardValue;
-    private BigDecimal upperLimit;
-    private BigDecimal lowerLimit;
+    private String standardValue;
+    private String upperLimit;
+    private String lowerLimit;
     private String inspectionType;
     private String testMethod;
     private Integer isDeleted;

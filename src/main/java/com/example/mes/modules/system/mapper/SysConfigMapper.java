@@ -9,6 +9,8 @@ public interface SysConfigMapper {
 
     int update(SysConfig config);
 
+    int deleteById(@Param("id") Long id);
+
     List<SysConfig> selectAll();
 
     SysConfig selectById(@Param("id") Long id);

@@ -13,11 +13,12 @@
         <result property="remark" column="remark"/>
         <result property="cost" column="cost" jdbcType="DECIMAL"/>
         <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
     </resultMap>
 
     <sql id="BaseColumns">
         id, plan_id, equip_id, execute_date, result,
-        executor, remark, cost, create_time
+        executor, remark, cost, create_time, update_time
     </sql>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
@@ -34,6 +35,38 @@
         FROM equip_maintenance_record
         WHERE equip_id = #{equipId}
         ORDER BY id DESC
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM equip_maintenance_record
+        WHERE 1 = 1
+        <if test="equipId != null">
+            AND equip_id = #{equipId}
+        </if>
+        <if test="startDate != null and startDate != ''">
+            AND execute_date &gt;= #{startDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            AND execute_date &lt;= #{endDate}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM equip_maintenance_record
+        WHERE 1 = 1
+        <if test="equipId != null">
+            AND equip_id = #{equipId}
+        </if>
+        <if test="startDate != null and startDate != ''">
+            AND execute_date &gt;= #{startDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            AND execute_date &lt;= #{endDate}
+        </if>
     </select>
 
 </mapper>

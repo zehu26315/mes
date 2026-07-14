@@ -11,14 +11,19 @@
         <result property="configType" column="config_type"/>
         <result property="description" column="description"/>
         <result property="status" column="status"/>
+        <result property="isDeleted" column="is_deleted"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
     <sql id="BaseColumns">
         id, config_name, config_key, config_value, config_type,
-        description, status, create_time, update_time
+        description, status, is_deleted, create_time, update_time
     </sql>
+
+    <update id="deleteById">
+        UPDATE sys_config SET is_deleted = 1 WHERE id = #{id}
+    </update>
 
     <update id="update">
         UPDATE sys_config
@@ -35,13 +40,14 @@
     <select id="selectAll" resultMap="BaseResultMap">
         SELECT <include refid="BaseColumns"/>
         FROM sys_config
+        WHERE is_deleted = 0
         ORDER BY id ASC
     </select>
 
     <select id="selectById" resultMap="BaseResultMap">
         SELECT <include refid="BaseColumns"/>
         FROM sys_config
-        WHERE id = #{id}
+        WHERE id = #{id} AND is_deleted = 0
     </select>
 
 </mapper>

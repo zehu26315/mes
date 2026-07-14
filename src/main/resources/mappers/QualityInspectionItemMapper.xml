@@ -9,9 +9,9 @@
         <result property="itemName" column="item_name"/>
         <result property="categoryId" column="category_id"/>
         <result property="unit" column="unit"/>
-        <result property="standardValue" column="standard_value" jdbcType="DECIMAL"/>
-        <result property="upperLimit" column="upper_limit" jdbcType="DECIMAL"/>
-        <result property="lowerLimit" column="lower_limit" jdbcType="DECIMAL"/>
+        <result property="standardValue" column="standard_value"/>
+        <result property="upperLimit" column="upper_limit"/>
+        <result property="lowerLimit" column="lower_limit"/>
         <result property="inspectionType" column="inspection_type"/>
         <result property="testMethod" column="test_method"/>
         <result property="isDeleted" column="is_deleted"/>
@@ -30,7 +30,7 @@
                                              standard_value, upper_limit, lower_limit,
                                              inspection_type, test_method)
         VALUES (#{itemCode}, #{itemName}, #{categoryId}, #{unit},
-                #{standardValue,jdbcType=DECIMAL}, #{upperLimit,jdbcType=DECIMAL}, #{lowerLimit,jdbcType=DECIMAL},
+                #{standardValue}, #{upperLimit}, #{lowerLimit},
                 #{inspectionType}, #{testMethod})
     </insert>
 
@@ -41,9 +41,9 @@
             <if test="itemName != null">item_name = #{itemName},</if>
             <if test="categoryId != null">category_id = #{categoryId},</if>
             <if test="unit != null">unit = #{unit},</if>
-            <if test="standardValue != null">standard_value = #{standardValue,jdbcType=DECIMAL},</if>
-            <if test="upperLimit != null">upper_limit = #{upperLimit,jdbcType=DECIMAL},</if>
-            <if test="lowerLimit != null">lower_limit = #{lowerLimit,jdbcType=DECIMAL},</if>
+            <if test="standardValue != null">standard_value = #{standardValue},</if>
+            <if test="upperLimit != null">upper_limit = #{upperLimit},</if>
+            <if test="lowerLimit != null">lower_limit = #{lowerLimit},</if>
             <if test="inspectionType != null">inspection_type = #{inspectionType},</if>
             <if test="testMethod != null">test_method = #{testMethod},</if>
         </set>

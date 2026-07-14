@@ -20,11 +20,11 @@
 
     <sql id="BaseColumns">
         id, rule_name, rule_code, barcode_type_id, prefix, date_format,
-        serial_length, separator, status, is_deleted, create_time, update_time
+        serial_length, `separator`, status, is_deleted, create_time, update_time
     </sql>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO barcode_rule (rule_name, rule_code, barcode_type_id, prefix, date_format, serial_length, separator, status)
+        INSERT INTO barcode_rule (rule_name, rule_code, barcode_type_id, prefix, date_format, serial_length, `separator`, status)
         VALUES (#{ruleName}, #{ruleCode}, #{barcodeTypeId}, #{prefix}, #{dateFormat}, #{serialLength}, #{separator}, #{status})
     </insert>
 
@@ -37,7 +37,7 @@
             <if test="prefix != null">prefix = #{prefix},</if>
             <if test="dateFormat != null">date_format = #{dateFormat},</if>
             <if test="serialLength != null">serial_length = #{serialLength},</if>
-            <if test="separator != null">separator = #{separator},</if>
+            <if test="separator != null">`separator` = #{separator},</if>
             <if test="status != null">status = #{status},</if>
         </set>
         WHERE id = #{id} AND is_deleted = 0

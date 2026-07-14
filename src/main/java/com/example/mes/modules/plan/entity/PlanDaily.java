@@ -26,7 +26,7 @@ public class PlanDaily {
     private String productionLine;
     private String shift;
     private String workshop;
-    private Integer status;
+    private String status;
     private Integer isDeleted;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

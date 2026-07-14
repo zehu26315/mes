@@ -25,7 +25,7 @@ public class PlanDailyServiceImpl implements PlanDailyService {
     @CacheEvict(cacheNames = CacheNames.PLAN_DAILY_LIST, allEntries = true)
     public PlanDaily create(PlanDaily planDaily) {
         if (planDaily.getStatus() == null) {
-            planDaily.setStatus(1);
+            planDaily.setStatus("1");
         }
         planDailyMapper.insert(planDaily);
         return planDaily;

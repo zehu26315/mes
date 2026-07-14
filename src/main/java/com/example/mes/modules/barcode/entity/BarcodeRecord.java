@@ -18,9 +18,9 @@ public class BarcodeRecord {
     private Long barcodeTypeId;
     private Long ruleId;
     private String productCode;
-    private String workOrderId;
+    private Long workOrderId;
     private String batchNo;
-    private Integer status;
+    private String status;
     private Integer printCount;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

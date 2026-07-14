@@ -24,7 +24,7 @@ public class PlanMpsServiceImpl implements PlanMpsService {
     @CacheEvict(cacheNames = CacheNames.PLAN_MPS_LIST, allEntries = true)
     public PlanMps create(PlanMps planMps) {
         if (planMps.getStatus() == null) {
-            planMps.setStatus(1);
+            planMps.setStatus("1");
         }
         planMpsMapper.insert(planMps);
         return planMps;

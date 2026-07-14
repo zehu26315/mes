@@ -19,4 +19,5 @@ public class EquipMaintenanceRecord {
     private String remark;
     private BigDecimal cost;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

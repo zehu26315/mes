@@ -26,7 +26,7 @@ public class PlanMps {
     private BigDecimal completedQty;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Integer status;
+    private String status;
     private Integer isDeleted;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

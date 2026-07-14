@@ -21,7 +21,7 @@ public class ProdRepairOrder {
     private BigDecimal quantity;
     private String defectDesc;
     private String repairProcess;
-    private Integer status;
+    private String status;
     private String result;
     private Integer isDeleted;
     private LocalDateTime createTime;

@@ -93,6 +93,15 @@ public class EquipmentController {
     @PostMapping("/maintenance-plans")
     public Result<EquipMaintenancePlan> createMaintenancePlan(@RequestBody EquipMaintenancePlan e) { return Result.ok(maintenancePlanService.create(e)); }
 
+    @GetMapping("/maintenance-records")
+    public Result<PageResult<EquipMaintenanceRecord>> listMaintenanceRecords(@RequestParam(required = false) Long equipId,
+                                                                              @RequestParam(required = false) String startDate,
+                                                                              @RequestParam(required = false) String endDate,
+                                                                              @RequestParam(defaultValue = "1") int page,
+                                                                              @RequestParam(defaultValue = "10") int pageSize) {
+        return Result.ok(maintenancePlanService.listRecords(equipId, startDate, endDate, page, pageSize));
+    }
+
     @PostMapping("/maintenance-records")
     public Result<EquipMaintenanceRecord> createMaintenanceRecord(@RequestBody EquipMaintenanceRecord e) { return Result.ok(maintenancePlanService.createRecord(e)); }
 

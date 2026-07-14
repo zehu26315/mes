@@ -37,10 +37,10 @@
         <if test="equipId != null">
             AND equip_id = #{equipId}
         </if>
-        <if test="startDate != null">
+        <if test="startDate != null and startDate != ''">
             AND record_date &gt;= #{startDate}
         </if>
-        <if test="endDate != null">
+        <if test="endDate != null and endDate != ''">
             AND record_date &lt;= #{endDate}
         </if>
         ORDER BY id DESC
@@ -54,10 +54,10 @@
         <if test="equipId != null">
             AND equip_id = #{equipId}
         </if>
-        <if test="startDate != null">
+        <if test="startDate != null and startDate != ''">
             AND record_date &gt;= #{startDate}
         </if>
-        <if test="endDate != null">
+        <if test="endDate != null and endDate != ''">
             AND record_date &lt;= #{endDate}
         </if>
     </select>

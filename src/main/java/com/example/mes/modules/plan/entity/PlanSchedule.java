@@ -25,7 +25,7 @@ public class PlanSchedule {
     private LocalDateTime planEndTime;
     private BigDecimal planQty;
     private Integer priority;
-    private Integer status;
+    private String status;
     private Integer isDeleted;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

@@ -24,7 +24,7 @@ public class ProdDispatchOrder {
     private String workCenter;
     private Long equipmentId;
     private String assignedTo;
-    private Integer status;
+    private String status;
     private LocalDateTime planStartTime;
     private LocalDateTime planEndTime;
     private LocalDateTime actualStartTime;

@@ -18,8 +18,8 @@ public class AndonRecord {
     private Long reasonId;
     private String workCenter;
     private String productionLine;
-    private String equipmentId;
-    private String workOrderId;
+    private Long equipmentId;
+    private Long workOrderId;
     private String description;
     private String status;
     private String severity;
@@ -29,7 +29,7 @@ public class AndonRecord {
     private LocalDateTime confirmTime;
     private LocalDateTime resolveTime;
     private String resolveDesc;
-    private Long duration;
+    private Integer duration;
     private Integer isDeleted;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

@@ -24,7 +24,7 @@ public class PlanScheduleServiceImpl implements PlanScheduleService {
     @CacheEvict(cacheNames = CacheNames.PLAN_SCHEDULE_LIST, allEntries = true)
     public PlanSchedule create(PlanSchedule planSchedule) {
         if (planSchedule.getStatus() == null) {
-            planSchedule.setStatus(1);
+            planSchedule.setStatus("1");
         }
         planScheduleMapper.insert(planSchedule);
         return planSchedule;

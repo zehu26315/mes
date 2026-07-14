@@ -8,6 +8,8 @@ public interface SysConfigService {
 
     SysConfig updateConfig(SysConfig config);
 
+    void deleteConfig(Long id);
+
     List<SysConfig> listAll();
 
     SysConfig getConfigById(Long id);

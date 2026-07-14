@@ -20,6 +20,7 @@ public class SysConfig {
     private String configType;
     private String description;
     private Integer status;
+    private Integer isDeleted;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

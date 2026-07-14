@@ -24,7 +24,7 @@ public class BarcodeRecordServiceImpl implements BarcodeRecordService {
             barcodeRecord.setBarcodeNo(UUID.randomUUID().toString().replace("-", ""));
         }
         if (barcodeRecord.getStatus() == null) {
-            barcodeRecord.setStatus(1);
+            barcodeRecord.setStatus("1");
         }
         if (barcodeRecord.getPrintCount() == null) {
             barcodeRecord.setPrintCount(0);

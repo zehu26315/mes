@@ -9,4 +9,5 @@ public interface EquipMaintenancePlanService {
     EquipMaintenancePlan getById(Long id);
     PageResult<EquipMaintenancePlan> list(Long equipId, String status, String startDate, String endDate, int page, int pageSize);
     EquipMaintenanceRecord createRecord(EquipMaintenanceRecord record);
+    PageResult<EquipMaintenanceRecord> listRecords(Long equipId, String startDate, String endDate, int page, int pageSize);
 }

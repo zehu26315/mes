@@ -28,6 +28,13 @@ public class SysConfigServiceImpl implements SysConfigService {
     }
 
     @Override
+    @Transactional
+    @CacheEvict(cacheNames = {CacheNames.SYS_CONFIG, CacheNames.SYS_CONFIG_ALL}, allEntries = true)
+    public void deleteConfig(Long id) {
+        sysConfigMapper.deleteById(id);
+    }
+
+    @Override
     @Cacheable(value = CacheNames.SYS_CONFIG_ALL, unless = "#result == null || #result.isEmpty()")
     public List<SysConfig> listAll() {
         return sysConfigMapper.selectAll();

@@ -25,7 +25,7 @@ public class ProdWorkOrder {
     private LocalDate startDate;
     private LocalDate endDate;
     private String currentProcess;
-    private Integer status;
+    private String status;
     private String workshop;
     private String productionLine;
     private String shift;

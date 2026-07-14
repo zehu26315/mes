@@ -36,4 +36,12 @@ public class EquipMaintenancePlanServiceImpl implements EquipMaintenancePlanServ
         if (record.getPlanId() != null) recordMapper.completePlan(record.getPlanId());
         return record;
     }
+
+    @Override
+    public PageResult<EquipMaintenanceRecord> listRecords(Long equipId, String startDate, String endDate, int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        List<EquipMaintenanceRecord> rows = recordMapper.selectList(equipId, startDate, endDate, offset, pageSize);
+        long total = recordMapper.countList(equipId, startDate, endDate);
+        return PageResult.of(total, page, pageSize, rows);
+    }
 }
