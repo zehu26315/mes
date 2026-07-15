@@ -1,10 +1,13 @@
 package com.example.mes.modules.barcode.service.impl;
 
 import com.example.mes.common.response.PageResult;
+import com.example.mes.config.CacheNames;
 import com.example.mes.modules.barcode.entity.BarcodeRecord;
 import com.example.mes.modules.barcode.mapper.BarcodeRecordMapper;
 import com.example.mes.modules.barcode.service.BarcodeRecordService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,21 +22,17 @@ public class BarcodeRecordServiceImpl implements BarcodeRecordService {
 
     @Override
     @Transactional
+    @CacheEvict(value = CacheNames.BARCODE_RECORD_LIST, allEntries = true)
     public BarcodeRecord create(BarcodeRecord barcodeRecord) {
-        if (barcodeRecord.getBarcodeNo() == null || barcodeRecord.getBarcodeNo().isBlank()) {
-            barcodeRecord.setBarcodeNo(UUID.randomUUID().toString().replace("-", ""));
-        }
-        if (barcodeRecord.getStatus() == null) {
-            barcodeRecord.setStatus("1");
-        }
-        if (barcodeRecord.getPrintCount() == null) {
-            barcodeRecord.setPrintCount(0);
+        if (barcodeRecord.getBarcode() == null || barcodeRecord.getBarcode().isBlank()) {
+            barcodeRecord.setBarcode(UUID.randomUUID().toString().replace("-", ""));
         }
         barcodeRecordMapper.insert(barcodeRecord);
         return barcodeRecord;
     }
 
     @Override
+    @Cacheable(value = CacheNames.BARCODE_RECORD, key = "#id", unless = "#result == null")
     public BarcodeRecord getById(Long id) {
         return barcodeRecordMapper.selectById(id);
     }
@@ -48,6 +47,7 @@ public class BarcodeRecordServiceImpl implements BarcodeRecordService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {CacheNames.BARCODE_RECORD, CacheNames.BARCODE_RECORD_LIST}, allEntries = true)
     public void deleteById(Long id) {
         barcodeRecordMapper.deleteById(id);
     }

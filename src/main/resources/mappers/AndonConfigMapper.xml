@@ -5,12 +5,12 @@
 
     <resultMap id="BaseResultMap" type="com.example.mes.modules.andon.entity.AndonConfig">
         <id property="id" column="id"/>
-        <result property="configName" column="config_name"/>
-        <result property="andonTypeId" column="andon_type_id"/>
-        <result property="workCenter" column="work_center"/>
-        <result property="triggerCondition" column="trigger_condition"/>
+        <result property="andonType" column="andon_type"/>
+        <result property="andonName" column="andon_name"/>
+        <result property="handleType" column="handle_type"/>
         <result property="notifyUsers" column="notify_users"/>
-        <result property="escalationTime" column="escalation_time"/>
+        <result property="notifyMethod" column="notify_method"/>
+        <result property="productionLine" column="production_line"/>
         <result property="status" column="status"/>
         <result property="isDeleted" column="is_deleted"/>
         <result property="createTime" column="create_time"/>
@@ -18,27 +18,28 @@
     </resultMap>
 
     <sql id="BaseColumns">
-        id, config_name, andon_type_id, work_center, trigger_condition,
-        notify_users, escalation_time, status, is_deleted, create_time, update_time
+        id, andon_type, andon_name, handle_type, notify_users,
+        notify_method, production_line, status, is_deleted, create_time, update_time
     </sql>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO andon_config (config_name, andon_type_id, work_center, trigger_condition,
-                                  notify_users, escalation_time, status)
-        VALUES (#{configName}, #{andonTypeId}, #{workCenter}, #{triggerCondition},
-                #{notifyUsers}, #{escalationTime}, #{status})
+        INSERT INTO andon_config (andon_type, andon_name, handle_type, notify_users,
+                                  notify_method, production_line, status)
+        VALUES (#{andonType}, #{andonName}, #{handleType}, #{notifyUsers},
+                #{notifyMethod}, #{productionLine}, #{status})
     </insert>
 
     <update id="update">
         UPDATE andon_config
         <set>
-            <if test="configName != null">config_name = #{configName},</if>
-            <if test="andonTypeId != null">andon_type_id = #{andonTypeId},</if>
-            <if test="workCenter != null">work_center = #{workCenter},</if>
-            <if test="triggerCondition != null">trigger_condition = #{triggerCondition},</if>
+            <if test="andonType != null">andon_type = #{andonType},</if>
+            <if test="andonName != null">andon_name = #{andonName},</if>
+            <if test="handleType != null">handle_type = #{handleType},</if>
             <if test="notifyUsers != null">notify_users = #{notifyUsers},</if>
-            <if test="escalationTime != null">escalation_time = #{escalationTime},</if>
+            <if test="notifyMethod != null">notify_method = #{notifyMethod},</if>
+            <if test="productionLine != null">production_line = #{productionLine},</if>
             <if test="status != null">status = #{status},</if>
+            update_time = NOW()
         </set>
         WHERE id = #{id} AND is_deleted = 0
     </update>
@@ -58,11 +59,11 @@
         FROM andon_config
         WHERE is_deleted = 0
         <if test="keyword != null and keyword != ''">
-            AND (config_name LIKE CONCAT('%', #{keyword}, '%')
-                 OR work_center LIKE CONCAT('%', #{keyword}, '%'))
+            AND (andon_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR andon_type LIKE CONCAT('%', #{keyword}, '%'))
         </if>
-        <if test="andonTypeId != null">
-            AND andon_type_id = #{andonTypeId}
+        <if test="andonType != null and andonType != ''">
+            AND andon_type = #{andonType}
         </if>
         <if test="status != null">
             AND status = #{status}
@@ -76,11 +77,11 @@
         FROM andon_config
         WHERE is_deleted = 0
         <if test="keyword != null and keyword != ''">
-            AND (config_name LIKE CONCAT('%', #{keyword}, '%')
-                 OR work_center LIKE CONCAT('%', #{keyword}, '%'))
+            AND (andon_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR andon_type LIKE CONCAT('%', #{keyword}, '%'))
         </if>
-        <if test="andonTypeId != null">
-            AND andon_type_id = #{andonTypeId}
+        <if test="andonType != null and andonType != ''">
+            AND andon_type = #{andonType}
         </if>
         <if test="status != null">
             AND status = #{status}

@@ -1,10 +1,13 @@
 package com.example.mes.modules.barcode.service.impl;
 
 import com.example.mes.common.response.PageResult;
+import com.example.mes.config.CacheNames;
 import com.example.mes.modules.barcode.entity.BarcodeRule;
 import com.example.mes.modules.barcode.mapper.BarcodeRuleMapper;
 import com.example.mes.modules.barcode.service.BarcodeRuleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +21,7 @@ public class BarcodeRuleServiceImpl implements BarcodeRuleService {
 
     @Override
     @Transactional
+    @CacheEvict(value = CacheNames.BARCODE_RULE_LIST, allEntries = true)
     public BarcodeRule create(BarcodeRule barcodeRule) {
         if (barcodeRule.getStatus() == null) {
             barcodeRule.setStatus(1);
@@ -28,6 +32,7 @@ public class BarcodeRuleServiceImpl implements BarcodeRuleService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {CacheNames.BARCODE_RULE, CacheNames.BARCODE_RULE_LIST}, allEntries = true)
     public BarcodeRule update(BarcodeRule barcodeRule) {
         barcodeRuleMapper.update(barcodeRule);
         return barcodeRuleMapper.selectById(barcodeRule.getId());
@@ -35,11 +40,13 @@ public class BarcodeRuleServiceImpl implements BarcodeRuleService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {CacheNames.BARCODE_RULE, CacheNames.BARCODE_RULE_LIST}, allEntries = true)
     public void deleteById(Long id) {
         barcodeRuleMapper.deleteById(id);
     }
 
     @Override
+    @Cacheable(value = CacheNames.BARCODE_RULE, key = "#id", unless = "#result == null")
     public BarcodeRule getById(Long id) {
         return barcodeRuleMapper.selectById(id);
     }

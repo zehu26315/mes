@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.quality.mapper.QualityInspectionMapper">
+
+    <resultMap id="BaseResultMap" type="QualityInspection">
+        <id property="id" column="id"/>
+        <result property="reportNo" column="report_no"/>
+        <result property="orderId" column="order_id"/>
+        <result property="productModel" column="product_model"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="inspectionType" column="inspection_type"/>
+        <result property="sampleQty" column="sample_qty"/>
+        <result property="defectQty" column="defect_qty"/>
+        <result property="result" column="result"/>
+        <result property="inspector" column="inspector"/>
+        <result property="remark" column="remark"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, report_no, order_id, product_model, batch_no, inspection_type,
+        sample_qty, defect_qty, result, inspector, remark,
+        is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO mes_quality_inspection (report_no, order_id, product_model, batch_no,
+            inspection_type, sample_qty, defect_qty, result, inspector, remark, create_time, update_time)
+        VALUES (#{reportNo}, #{orderId}, #{productModel}, #{batchNo},
+            #{inspectionType}, #{sampleQty}, #{defectQty}, #{result}, #{inspector}, #{remark},
+            #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="update">
+        UPDATE mes_quality_inspection
+        <set>
+            <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="productModel != null">product_model = #{productModel},</if>
+            <if test="batchNo != null">batch_no = #{batchNo},</if>
+            <if test="inspectionType != null">inspection_type = #{inspectionType},</if>
+            <if test="sampleQty != null">sample_qty = #{sampleQty},</if>
+            <if test="defectQty != null">defect_qty = #{defectQty},</if>
+            <if test="result != null">result = #{result},</if>
+            <if test="inspector != null">inspector = #{inspector},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE mes_quality_inspection SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM mes_quality_inspection WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM mes_quality_inspection WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (report_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_model LIKE CONCAT('%', #{keyword}, '%')
+                 OR batch_no LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="inspectionType != null and inspectionType != ''">
+            AND inspection_type = #{inspectionType}
+        </if>
+        <if test="result != null">
+            AND result = #{result}
+        </if>
+        ORDER BY id DESC LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*) FROM mes_quality_inspection WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (report_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_model LIKE CONCAT('%', #{keyword}, '%')
+                 OR batch_no LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="inspectionType != null and inspectionType != ''">
+            AND inspection_type = #{inspectionType}
+        </if>
+        <if test="result != null">
+            AND result = #{result}
+        </if>
+    </select>
+
+    <select id="statsByResult" resultType="java.util.HashMap">
+        SELECT result, COUNT(*) AS count, SUM(sample_qty) AS total_qty
+        FROM mes_quality_inspection WHERE is_deleted = 0
+        GROUP BY result
+    </select>
+
+</mapper>

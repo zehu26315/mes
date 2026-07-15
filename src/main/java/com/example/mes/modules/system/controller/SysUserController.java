@@ -7,8 +7,6 @@ import com.example.mes.modules.system.service.SysUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/sys/users")
 @RequiredArgsConstructor
@@ -46,9 +44,4 @@ public class SysUserController {
         return Result.ok(sysUserService.listUsers(keyword, status, page, pageSize));
     }
 
-    @PostMapping("/{id}/roles")
-    public Result<Void> assignRoles(@PathVariable Long id, @RequestBody List<Long> roleIds) {
-        sysUserService.assignRoles(id, roleIds);
-        return Result.ok();
-    }
 }

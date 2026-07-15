@@ -1,14 +1,16 @@
 package com.example.mes.modules.andon.service.impl;
 
 import com.example.mes.common.response.PageResult;
+import com.example.mes.config.CacheNames;
 import com.example.mes.modules.andon.entity.AndonRecord;
 import com.example.mes.modules.andon.mapper.AndonRecordMapper;
 import com.example.mes.modules.andon.service.AndonRecordService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -23,23 +25,36 @@ public class AndonRecordServiceImpl implements AndonRecordService {
 
     @Override
     @Transactional
+    @CacheEvict(value = CacheNames.ANDON_RECORD_LIST, allEntries = true)
     public AndonRecord create(AndonRecord andonRecord) {
-        andonRecord.setStatus("REPORTED");
-        andonRecord.setReportTime(LocalDateTime.now());
-        if (andonRecord.getSeverity() == null) {
-            andonRecord.setSeverity("NORMAL");
+        if (andonRecord.getStatus() == null) {
+            andonRecord.setStatus(1);
+        }
+        if (andonRecord.getInitTime() == null) {
+            andonRecord.setInitTime(LocalDateTime.now());
         }
         andonRecordMapper.insert(andonRecord);
         return andonRecord;
     }
 
     @Override
+    @Transactional
+    @CacheEvict(value = {CacheNames.ANDON_RECORD, CacheNames.ANDON_RECORD_LIST}, allEntries = true)
+    public AndonRecord update(AndonRecord andonRecord) {
+        andonRecord.setCreateTime(null);
+        andonRecord.setUpdateTime(LocalDateTime.now());
+        andonRecordMapper.update(andonRecord);
+        return andonRecordMapper.selectById(andonRecord.getId());
+    }
+
+    @Override
+    @Cacheable(value = CacheNames.ANDON_RECORD, key = "#id", unless = "#result == null")
     public AndonRecord getById(Long id) {
         return andonRecordMapper.selectById(id);
     }
 
     @Override
-    public PageResult<AndonRecord> list(String keyword, Long andonTypeId, String status, String workCenter,
+    public PageResult<AndonRecord> list(String keyword, Long andonConfigId, Integer status, String productionLine,
                                         String startTime, String endTime, int page, int pageSize) {
         int offset = (page - 1) * pageSize;
         LocalDateTime start = null;
@@ -50,49 +65,10 @@ public class AndonRecordServiceImpl implements AndonRecordService {
         if (endTime != null && !endTime.isEmpty()) {
             end = LocalDateTime.parse(endTime, FORMATTER);
         }
-        List<AndonRecord> rows = andonRecordMapper.selectList(keyword, andonTypeId, status, workCenter,
+        List<AndonRecord> rows = andonRecordMapper.selectList(keyword, andonConfigId, status, productionLine,
                 start, end, offset, pageSize);
-        long total = andonRecordMapper.countList(keyword, andonTypeId, status, workCenter, start, end);
+        long total = andonRecordMapper.countList(keyword, andonConfigId, status, productionLine, start, end);
         return PageResult.of(total, page, pageSize, rows);
-    }
-
-    @Override
-    @Transactional
-    public AndonRecord updateStatus(Long id, String status, String handler, String resolveDesc) {
-        AndonRecord record = andonRecordMapper.selectById(id);
-        if (record == null) {
-            throw new RuntimeException("Andon record not found: " + id);
-        }
-
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime confirmTime = null;
-        LocalDateTime resolveTime = null;
-        Long duration = null;
-
-        switch (status) {
-            case "CONFIRMED":
-                if (!"REPORTED".equals(record.getStatus())) {
-                    throw new RuntimeException("Only REPORTED records can be confirmed, current status: " + record.getStatus());
-                }
-                confirmTime = now;
-                break;
-            case "RESOLVED":
-                if (!"CONFIRMED".equals(record.getStatus())) {
-                    throw new RuntimeException("Only CONFIRMED records can be resolved, current status: " + record.getStatus());
-                }
-                resolveTime = now;
-                if (record.getConfirmTime() != null) {
-                    duration = Duration.between(record.getConfirmTime(), resolveTime).toMinutes();
-                } else if (record.getReportTime() != null) {
-                    duration = Duration.between(record.getReportTime(), resolveTime).toMinutes();
-                }
-                break;
-            default:
-                throw new RuntimeException("Invalid status transition to: " + status);
-        }
-
-        andonRecordMapper.updateStatus(id, status, handler, confirmTime, resolveTime, resolveDesc, duration);
-        return andonRecordMapper.selectById(id);
     }
 
     @Override
@@ -102,6 +78,7 @@ public class AndonRecordServiceImpl implements AndonRecordService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {CacheNames.ANDON_RECORD, CacheNames.ANDON_RECORD_LIST}, allEntries = true)
     public void delete(Long id) {
         andonRecordMapper.deleteById(id);
     }

@@ -3,16 +3,12 @@ package com.example.mes.modules.system.service;
 import com.example.mes.common.response.LoginVO;
 import com.example.mes.common.response.PageResult;
 import com.example.mes.modules.system.entity.SysUser;
-import com.example.mes.modules.system.entity.SysUserRole;
-import com.example.mes.modules.system.mapper.SysRoleMapper;
 import com.example.mes.modules.system.mapper.SysUserMapper;
-import com.example.mes.modules.system.mapper.SysUserRoleMapper;
 import com.example.mes.modules.system.service.impl.SysUserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -35,10 +31,6 @@ class SysUserServiceImplTest {
     @Mock
     private SysUserMapper sysUserMapper;
     @Mock
-    private SysUserRoleMapper sysUserRoleMapper;
-    @Mock
-    private SysRoleMapper sysRoleMapper;
-    @Mock
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
@@ -52,13 +44,11 @@ class SysUserServiceImplTest {
                 .id(1L)
                 .username("admin")
                 .password("encoded_pass")
-                .realName("管理员")
-                .deptId(1L)
+                .nickname("管理员")
                 .status(1)
                 .isDeleted(0)
                 .build();
 
-        // PasswordEncoder 默认行为
         when(passwordEncoder.encode(anyString())).thenReturn("$2a$10$encoded");
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(false);
     }
@@ -118,14 +108,14 @@ class SysUserServiceImplTest {
                 .id(1L)
                 .username("should_be_nulled")
                 .password("should_be_nulled")
-                .realName("新名称")
+                .nickname("新名称")
                 .build();
 
         SysUser refreshed = SysUser.builder()
                 .id(1L)
                 .username(null)
                 .password(null)
-                .realName("新名称")
+                .nickname("新名称")
                 .build();
 
         when(sysUserMapper.selectById(1L)).thenReturn(refreshed);
@@ -191,69 +181,25 @@ class SysUserServiceImplTest {
         verify(sysUserMapper).selectList(null, null, 0, 10);
     }
 
-    // ==================== assignRoles ====================
-
-    @Test
-    @DisplayName("分配角色 → 删除旧角色 → 批量插入新角色")
-    void assignRoles_withRoles() {
-        service.assignRoles(1L, List.of(10L, 20L, 30L));
-
-        verify(sysUserRoleMapper).deleteByUserId(1L);
-
-        @SuppressWarnings("unchecked")
-        ArgumentCaptor<List<SysUserRole>> captor = ArgumentCaptor.forClass(List.class);
-        verify(sysUserRoleMapper).batchInsert(captor.capture());
-        List<SysUserRole> inserted = captor.getValue();
-
-        assertEquals(3, inserted.size());
-        assertEquals(1L, inserted.get(0).getUserId());
-        assertEquals(10L, inserted.get(0).getRoleId());
-        assertEquals(20L, inserted.get(1).getRoleId());
-        assertEquals(30L, inserted.get(2).getRoleId());
-    }
-
-    @Test
-    @DisplayName("分配角色 空列表 → 仅删除角色")
-    void assignRoles_emptyList() {
-        service.assignRoles(1L, List.of());
-
-        verify(sysUserRoleMapper).deleteByUserId(1L);
-        verify(sysUserRoleMapper, never()).batchInsert(any());
-    }
-
-    @Test
-    @DisplayName("分配角色 null → 仅删除角色")
-    void assignRoles_nullList() {
-        service.assignRoles(1L, null);
-
-        verify(sysUserRoleMapper).deleteByUserId(1L);
-        verify(sysUserRoleMapper, never()).batchInsert(any());
-    }
-
     // ==================== login ====================
 
     @Test
-    @DisplayName("登录成功 → 有效凭据 + 用户启用 → 返回 LoginVO 含角色")
+    @DisplayName("登录成功 → 有效凭据 + 用户启用 → 返回 LoginVO")
     void login_success() {
-        // matches 需要返回 true
         when(passwordEncoder.matches("correct", user.getPassword())).thenReturn(true);
         when(sysUserMapper.selectByUsername("admin")).thenReturn(user);
-        when(sysRoleMapper.selectRoleCodesByUserId(1L)).thenReturn(List.of("ADMIN", "USER"));
 
         LoginVO result = service.login("admin", "correct");
 
         assertEquals(1L, result.getUserId());
         assertEquals("admin", result.getUsername());
-        assertEquals("管理员", result.getRealName());
-        assertEquals(1L, result.getDeptId());
-        assertEquals(List.of("ADMIN", "USER"), result.getRoles());
+        assertEquals("管理员", result.getNickname());
     }
 
     @Test
     @DisplayName("登录 密码错误 → 抛异常 + 走 dummyHash 防时序攻击")
     void login_wrongPassword() {
         when(sysUserMapper.selectByUsername("admin")).thenReturn(user);
-        // passwordEncoder.matches 默认返回 false（stub 在 setUp 中）
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                 () -> service.login("admin", "wrong"));

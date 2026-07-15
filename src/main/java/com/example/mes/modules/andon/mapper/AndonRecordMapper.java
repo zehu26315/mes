@@ -10,29 +10,23 @@ public interface AndonRecordMapper {
 
     int insert(AndonRecord andonRecord);
 
-    int updateStatus(@Param("id") Long id,
-                     @Param("status") String status,
-                     @Param("handler") String handler,
-                     @Param("confirmTime") LocalDateTime confirmTime,
-                     @Param("resolveTime") LocalDateTime resolveTime,
-                     @Param("resolveDesc") String resolveDesc,
-                     @Param("duration") Long duration);
+    int update(AndonRecord andonRecord);
 
     AndonRecord selectById(@Param("id") Long id);
 
     List<AndonRecord> selectList(@Param("keyword") String keyword,
-                                 @Param("andonTypeId") Long andonTypeId,
-                                 @Param("status") String status,
-                                 @Param("workCenter") String workCenter,
+                                 @Param("andonConfigId") Long andonConfigId,
+                                 @Param("status") Integer status,
+                                 @Param("productionLine") String productionLine,
                                  @Param("startTime") LocalDateTime startTime,
                                  @Param("endTime") LocalDateTime endTime,
                                  @Param("offset") int offset,
                                  @Param("limit") int limit);
 
     long countList(@Param("keyword") String keyword,
-                   @Param("andonTypeId") Long andonTypeId,
-                   @Param("status") String status,
-                   @Param("workCenter") String workCenter,
+                   @Param("andonConfigId") Long andonConfigId,
+                   @Param("status") Integer status,
+                   @Param("productionLine") String productionLine,
                    @Param("startTime") LocalDateTime startTime,
                    @Param("endTime") LocalDateTime endTime);
 

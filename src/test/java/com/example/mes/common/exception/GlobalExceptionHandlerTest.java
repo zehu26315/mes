@@ -84,7 +84,7 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("通用 Exception → 500 + 系统内部错误")
     void handleGenericException() {
-        Result<Void> result = handler.handleException(new RuntimeException("boom"));
+        Result<Void> result = handler.handleException(new RuntimeException("boom"), null);
 
         assertEquals(500, result.getCode());
         assertEquals("系统内部错误，请联系管理员", result.getMessage());

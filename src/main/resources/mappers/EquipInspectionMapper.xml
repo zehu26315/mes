@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.equipment.mapper.EquipInspectionMapper">
+
+    <resultMap id="BaseResultMap" type="EquipInspection">
+        <id property="id" column="id"/>
+        <result property="inspectionNo" column="inspection_no"/>
+        <result property="equipmentId" column="equipment_id"/>
+        <result property="inspectionDate" column="inspection_date"/>
+        <result property="inspector" column="inspector"/>
+        <result property="inspectionItems" column="inspection_items"/>
+        <result property="result" column="result"/>
+        <result property="remark" column="remark"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, inspection_no, equipment_id, inspection_date, inspector, inspection_items,
+        result, remark, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO eqp_inspection (inspection_no, equipment_id, inspection_date, inspector,
+            inspection_items, result, remark, create_time, update_time)
+        VALUES (#{inspectionNo}, #{equipmentId}, #{inspectionDate}, #{inspector},
+            #{inspectionItems}, #{result}, #{remark}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="update">
+        UPDATE eqp_inspection
+        <set>
+            <if test="inspectionNo != null">inspection_no = #{inspectionNo},</if>
+            <if test="equipmentId != null">equipment_id = #{equipmentId},</if>
+            <if test="inspectionDate != null">inspection_date = #{inspectionDate},</if>
+            <if test="inspector != null">inspector = #{inspector},</if>
+            <if test="inspectionItems != null">inspection_items = #{inspectionItems},</if>
+            <if test="result != null">result = #{result},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE eqp_inspection SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM eqp_inspection
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM eqp_inspection
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (inspection_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR inspector LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="equipmentId != null">
+            AND equipment_id = #{equipmentId}
+        </if>
+        <if test="result != null">
+            AND result = #{result}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM eqp_inspection
+        WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (inspection_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR inspector LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="equipmentId != null">
+            AND equipment_id = #{equipmentId}
+        </if>
+        <if test="result != null">
+            AND result = #{result}
+        </if>
+    </select>
+
+</mapper>

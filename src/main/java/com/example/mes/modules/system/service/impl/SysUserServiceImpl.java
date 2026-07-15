@@ -4,10 +4,7 @@ import com.example.mes.common.response.LoginVO;
 import com.example.mes.common.response.PageResult;
 import com.example.mes.config.CacheNames;
 import com.example.mes.modules.system.entity.SysUser;
-import com.example.mes.modules.system.entity.SysUserRole;
-import com.example.mes.modules.system.mapper.SysRoleMapper;
 import com.example.mes.modules.system.mapper.SysUserMapper;
-import com.example.mes.modules.system.mapper.SysUserRoleMapper;
 import com.example.mes.modules.system.service.SysUserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -19,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +24,6 @@ public class SysUserServiceImpl implements SysUserService {
     private static final Logger log = LoggerFactory.getLogger(SysUserServiceImpl.class);
 
     private final SysUserMapper sysUserMapper;
-    private final SysUserRoleMapper sysUserRoleMapper;
-    private final SysRoleMapper sysRoleMapper;
     private final PasswordEncoder passwordEncoder;
 
     /**
@@ -75,9 +69,13 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional
     @CacheEvict(cacheNames = {CacheNames.SYS_USER, CacheNames.SYS_USER_LIST}, allEntries = true)
     public SysUser updateUser(SysUser user) {
-        // 不允许修改密码和用户名
-        user.setPassword(null);
+        // 不允许修改用户名；密码为空则跳过，非空则重新加密
         user.setUsername(null);
+        if (user.getPassword() != null && !user.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        } else {
+            user.setPassword(null);
+        }
         sysUserMapper.update(user);
         return sysUserMapper.selectById(user.getId());
     }
@@ -104,22 +102,6 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    @Transactional
-    @CacheEvict(cacheNames = CacheNames.SYS_USER, key = "#userId")
-    public void assignRoles(Long userId, List<Long> roleIds) {
-        sysUserRoleMapper.deleteByUserId(userId);
-        if (roleIds != null && !roleIds.isEmpty()) {
-            List<SysUserRole> userRoles = roleIds.stream()
-                    .map(roleId -> SysUserRole.builder()
-                            .userId(userId)
-                            .roleId(roleId)
-                            .build())
-                    .collect(Collectors.toList());
-            sysUserRoleMapper.batchInsert(userRoles);
-        }
-    }
-
-    @Override
     public LoginVO login(String username, String password) {
         SysUser user = sysUserMapper.selectByUsername(username);
 
@@ -136,15 +118,10 @@ public class SysUserServiceImpl implements SysUserService {
             throw new IllegalArgumentException("用户名或密码错误");
         }
 
-        // 一次关联查询取出用户启用中的角色编码
-        List<String> roles = sysRoleMapper.selectRoleCodesByUserId(user.getId());
-
         return LoginVO.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
-                .realName(user.getRealName())
-                .deptId(user.getDeptId())
-                .roles(roles)
+                .nickname(user.getNickname())
                 .build();
     }
 }

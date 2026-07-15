@@ -9,12 +9,12 @@ public interface AndonRecordService {
 
     AndonRecord create(AndonRecord andonRecord);
 
+    AndonRecord update(AndonRecord andonRecord);
+
     AndonRecord getById(Long id);
 
-    PageResult<AndonRecord> list(String keyword, Long andonTypeId, String status, String workCenter,
+    PageResult<AndonRecord> list(String keyword, Long andonConfigId, Integer status, String productionLine,
                                  String startTime, String endTime, int page, int pageSize);
-
-    AndonRecord updateStatus(Long id, String status, String handler, String resolveDesc);
 
     List<AndonRecord> getActive();
 

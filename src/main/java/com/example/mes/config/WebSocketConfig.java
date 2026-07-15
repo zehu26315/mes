@@ -1,10 +1,20 @@
 package com.example.mes.config;
 
+import com.example.mes.common.response.LoginVO;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+
+import java.security.Principal;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -12,9 +22,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // 客户端订阅 /topic 接收服务端推送
         registry.enableSimpleBroker("/topic");
-        // 客户端发送到 /app 路由到 @MessageMapping
         registry.setApplicationDestinationPrefixes("/app");
     }
 
@@ -23,5 +31,23 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws-andon")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
+    }
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(new ChannelInterceptor() {
+            @Override
+            public Message<?> preSend(Message<?> message, MessageChannel channel) {
+                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+                if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
+                    Principal user = (Principal) accessor.getSessionAttributes().get("loginUser");
+                    if (user == null) {
+                        throw new IllegalArgumentException("未登录");
+                    }
+                    accessor.setUser(user);
+                }
+                return message;
+            }
+        });
     }
 }

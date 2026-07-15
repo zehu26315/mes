@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.production.mapper.ProReportMapper">
+
+    <resultMap id="BaseResultMap" type="ProReport">
+        <id property="id" column="id"/>
+        <result property="reportNo" column="report_no"/>
+        <result property="orderId" column="order_id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="operationId" column="operation_id"/>
+        <result property="processName" column="process_name"/>
+        <result property="worker" column="worker"/>
+        <result property="workstation" column="workstation"/>
+        <result property="workerId" column="worker_id"/>
+        <result property="reportType" column="report_type"/>
+        <result property="reportQuantity" column="report_quantity" jdbcType="DECIMAL"/>
+        <result property="qualifiedQuantity" column="qualified_quantity" jdbcType="DECIMAL"/>
+        <result property="defectQuantity" column="defect_quantity" jdbcType="DECIMAL"/>
+        <result property="defectReason" column="defect_reason"/>
+        <result property="equipmentId" column="equipment_id"/>
+        <result property="barcode" column="barcode"/>
+        <result property="reportDate" column="report_date"/>
+        <result property="shift" column="shift"/>
+        <result property="reportTime" column="report_time"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, report_no, order_id, task_id, operation_id, process_name, worker, workstation,
+        worker_id, report_type, report_quantity, qualified_quantity, defect_quantity,
+        defect_reason, equipment_id, barcode, report_date, shift, report_time,
+        is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO pro_report (report_no, order_id, task_id, operation_id, process_name,
+            worker, workstation, worker_id, report_type, report_quantity, qualified_quantity,
+            defect_quantity, defect_reason, equipment_id, barcode, report_date, shift,
+            report_time, create_time, update_time)
+        VALUES (#{reportNo}, #{orderId}, #{taskId}, #{operationId}, #{processName},
+            #{worker}, #{workstation}, #{workerId}, #{reportType}, #{reportQuantity},
+            #{qualifiedQuantity}, #{defectQuantity}, #{defectReason}, #{equipmentId},
+            #{barcode}, #{reportDate}, #{shift}, #{reportTime}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="update">
+        UPDATE pro_report
+        <set>
+            <if test="taskId != null">task_id = #{taskId},</if>
+            <if test="operationId != null">operation_id = #{operationId},</if>
+            <if test="processName != null">process_name = #{processName},</if>
+            <if test="worker != null">worker = #{worker},</if>
+            <if test="workstation != null">workstation = #{workstation},</if>
+            <if test="workerId != null">worker_id = #{workerId},</if>
+            <if test="reportType != null">report_type = #{reportType},</if>
+            <if test="reportQuantity != null">report_quantity = #{reportQuantity},</if>
+            <if test="qualifiedQuantity != null">qualified_quantity = #{qualifiedQuantity},</if>
+            <if test="defectQuantity != null">defect_quantity = #{defectQuantity},</if>
+            <if test="defectReason != null">defect_reason = #{defectReason},</if>
+            <if test="equipmentId != null">equipment_id = #{equipmentId},</if>
+            <if test="barcode != null">barcode = #{barcode},</if>
+            <if test="reportDate != null">report_date = #{reportDate},</if>
+            <if test="shift != null">shift = #{shift},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE pro_report SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM pro_report WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM pro_report WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (report_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR worker LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="orderId != null">
+            AND order_id = #{orderId}
+        </if>
+        <if test="reportDate != null and reportDate != ''">
+            AND report_date = #{reportDate}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*) FROM pro_report WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (report_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR worker LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="orderId != null">
+            AND order_id = #{orderId}
+        </if>
+        <if test="reportDate != null and reportDate != ''">
+            AND report_date = #{reportDate}
+        </if>
+    </select>
+
+</mapper>

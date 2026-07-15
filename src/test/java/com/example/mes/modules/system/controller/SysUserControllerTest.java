@@ -41,12 +41,12 @@ class SysUserControllerTest {
     @Test
     @DisplayName("POST /api/sys/users → 200 创建用户")
     void create() throws Exception {
-        SysUser created = SysUser.builder().id(1L).username("newuser").realName("新用户").build();
+        SysUser created = SysUser.builder().id(1L).username("newuser").nickname("新用户").build();
         when(sysUserService.createUser(any(SysUser.class))).thenReturn(created);
 
         mockMvc.perform(post("/api/sys/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\":\"newuser\",\"password\":\"123456\",\"realName\":\"新用户\"}"))
+                        .content("{\"username\":\"newuser\",\"password\":\"123456\",\"nickname\":\"新用户\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.data.id").value(1))
@@ -56,15 +56,15 @@ class SysUserControllerTest {
     @Test
     @DisplayName("PUT /api/sys/users/1 → 200 更新用户")
     void update() throws Exception {
-        SysUser updated = SysUser.builder().id(1L).username("admin").realName("新名称").build();
+        SysUser updated = SysUser.builder().id(1L).username("admin").nickname("新名称").build();
         when(sysUserService.updateUser(any(SysUser.class))).thenReturn(updated);
 
         mockMvc.perform(put("/api/sys/users/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"realName\":\"新名称\"}"))
+                        .content("{\"nickname\":\"新名称\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
-                .andExpect(jsonPath("$.data.realName").value("新名称"));
+                .andExpect(jsonPath("$.data.nickname").value("新名称"));
     }
 
     @Test
@@ -80,7 +80,7 @@ class SysUserControllerTest {
     @Test
     @DisplayName("GET /api/sys/users/1 → 200 返回用户")
     void getById() throws Exception {
-        SysUser user = SysUser.builder().id(1L).username("admin").realName("管理员").build();
+        SysUser user = SysUser.builder().id(1L).username("admin").nickname("管理员").build();
         when(sysUserService.getUserById(1L)).thenReturn(user);
 
         mockMvc.perform(get("/api/sys/users/1"))
@@ -103,17 +103,5 @@ class SysUserControllerTest {
                 .andExpect(jsonPath("$.data.total").value(1))
                 .andExpect(jsonPath("$.data.page").value(1))
                 .andExpect(jsonPath("$.data.rows.length()").value(1));
-    }
-
-    @Test
-    @DisplayName("POST /api/sys/users/1/roles → 200 分配角色")
-    void assignRoles() throws Exception {
-        doNothing().when(sysUserService).assignRoles(1L, List.of(1L, 2L));
-
-        mockMvc.perform(post("/api/sys/users/1/roles")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("[1,2]"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(200));
     }
 }

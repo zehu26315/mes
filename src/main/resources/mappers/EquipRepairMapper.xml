@@ -6,85 +6,83 @@
     <resultMap id="BaseResultMap" type="EquipRepair">
         <id property="id" column="id"/>
         <result property="repairNo" column="repair_no"/>
-        <result property="equipId" column="equip_id"/>
-        <result property="faultId" column="fault_id"/>
-        <result property="faultDesc" column="fault_desc"/>
-        <result property="repairType" column="repair_type"/>
+        <result property="equipmentId" column="equipment_id"/>
+        <result property="faultType" column="fault_type"/>
+        <result property="faultReason" column="fault_reason"/>
+        <result property="failureDesc" column="failure_desc"/>
         <result property="reporter" column="reporter"/>
         <result property="repairPerson" column="repair_person"/>
+        <result property="reportTime" column="report_time"/>
+        <result property="repairTime" column="repair_time"/>
         <result property="startTime" column="start_time"/>
         <result property="endTime" column="end_time"/>
-        <result property="downtime" column="downtime"/>
         <result property="repairContent" column="repair_content"/>
-        <result property="partsUsed" column="parts_used"/>
-        <result property="cost" column="cost" jdbcType="DECIMAL"/>
         <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
         <result property="isDeleted" column="is_deleted"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
     <sql id="BaseColumns">
-        id, repair_no, equip_id, fault_id, fault_desc,
-        repair_type, reporter, repair_person, start_time, end_time,
-        downtime, repair_content, parts_used, cost, status,
+        id, repair_no, equipment_id, fault_type, fault_reason, failure_desc, reporter, repair_person,
+        report_time, repair_time, start_time, end_time, repair_content, status, remark,
         is_deleted, create_time, update_time
     </sql>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO equip_repair (repair_no, equip_id, fault_id, fault_desc,
-            repair_type, reporter, repair_person, start_time, end_time,
-            downtime, repair_content, parts_used, cost, status)
-        VALUES (#{repairNo}, #{equipId}, #{faultId}, #{faultDesc},
-            #{repairType}, #{reporter}, #{repairPerson}, #{startTime}, #{endTime},
-            #{downtime}, #{repairContent}, #{partsUsed}, #{cost}, #{status})
+        INSERT INTO eqp_repair (repair_no, equipment_id, fault_type, fault_reason, failure_desc,
+            reporter, repair_person, report_time, repair_time, start_time, end_time,
+            repair_content, status, remark, create_time, update_time)
+        VALUES (#{repairNo}, #{equipmentId}, #{faultType}, #{faultReason}, #{failureDesc},
+            #{reporter}, #{repairPerson}, #{reportTime}, #{repairTime}, #{startTime}, #{endTime},
+            #{repairContent}, #{status}, #{remark}, #{createTime}, #{updateTime})
     </insert>
 
     <update id="update">
-        UPDATE equip_repair
+        UPDATE eqp_repair
         <set>
             <if test="repairNo != null">repair_no = #{repairNo},</if>
-            <if test="equipId != null">equip_id = #{equipId},</if>
-            <if test="faultId != null">fault_id = #{faultId},</if>
-            <if test="faultDesc != null">fault_desc = #{faultDesc},</if>
-            <if test="repairType != null">repair_type = #{repairType},</if>
+            <if test="equipmentId != null">equipment_id = #{equipmentId},</if>
+            <if test="faultType != null">fault_type = #{faultType},</if>
+            <if test="faultReason != null">fault_reason = #{faultReason},</if>
+            <if test="failureDesc != null">failure_desc = #{failureDesc},</if>
             <if test="reporter != null">reporter = #{reporter},</if>
             <if test="repairPerson != null">repair_person = #{repairPerson},</if>
+            <if test="reportTime != null">report_time = #{reportTime},</if>
+            <if test="repairTime != null">repair_time = #{repairTime},</if>
             <if test="startTime != null">start_time = #{startTime},</if>
             <if test="endTime != null">end_time = #{endTime},</if>
-            <if test="downtime != null">downtime = #{downtime},</if>
             <if test="repairContent != null">repair_content = #{repairContent},</if>
-            <if test="partsUsed != null">parts_used = #{partsUsed},</if>
-            <if test="cost != null">cost = #{cost},</if>
             <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            update_time = NOW()
         </set>
         WHERE id = #{id} AND is_deleted = 0
     </update>
 
     <update id="deleteById">
-        UPDATE equip_repair SET is_deleted = 1 WHERE id = #{id}
-    </update>
-
-    <update id="complete">
-        UPDATE equip_repair
-        SET end_time = #{endTime}, downtime = #{downtime}, status = 'COMPLETED'
-        WHERE id = #{id}
+        UPDATE eqp_repair SET is_deleted = 1 WHERE id = #{id}
     </update>
 
     <select id="selectById" resultMap="BaseResultMap">
         SELECT <include refid="BaseColumns"/>
-        FROM equip_repair
+        FROM eqp_repair
         WHERE id = #{id} AND is_deleted = 0
     </select>
 
     <select id="selectList" resultMap="BaseResultMap">
         SELECT <include refid="BaseColumns"/>
-        FROM equip_repair
+        FROM eqp_repair
         WHERE is_deleted = 0
-        <if test="equipId != null">
-            AND equip_id = #{equipId}
+        <if test="keyword != null and keyword != ''">
+            AND (repair_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR reporter LIKE CONCAT('%', #{keyword}, '%'))
         </if>
-        <if test="status != null and status != ''">
+        <if test="equipmentId != null">
+            AND equipment_id = #{equipmentId}
+        </if>
+        <if test="status != null">
             AND status = #{status}
         </if>
         ORDER BY id DESC
@@ -93,14 +91,25 @@
 
     <select id="countList" resultType="long">
         SELECT COUNT(*)
-        FROM equip_repair
+        FROM eqp_repair
         WHERE is_deleted = 0
-        <if test="equipId != null">
-            AND equip_id = #{equipId}
+        <if test="keyword != null and keyword != ''">
+            AND (repair_no LIKE CONCAT('%', #{keyword}, '%')
+                 OR reporter LIKE CONCAT('%', #{keyword}, '%'))
         </if>
-        <if test="status != null and status != ''">
+        <if test="equipmentId != null">
+            AND equipment_id = #{equipmentId}
+        </if>
+        <if test="status != null">
             AND status = #{status}
         </if>
     </select>
+
+    <update id="complete">
+        UPDATE eqp_repair
+        SET end_time = #{endTime}, repair_time = #{endTime},
+            status = #{status}, remark = #{remark}, update_time = NOW()
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
 
 </mapper>

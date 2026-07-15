@@ -7,10 +7,9 @@
         <id property="id" column="id"/>
         <result property="username" column="username"/>
         <result property="password" column="password"/>
-        <result property="realName" column="real_name"/>
+        <result property="nickname" column="nickname"/>
         <result property="phone" column="phone"/>
         <result property="email" column="email"/>
-        <result property="deptId" column="dept_id"/>
         <result property="status" column="status"/>
         <result property="isDeleted" column="is_deleted"/>
         <result property="createTime" column="create_time"/>
@@ -18,22 +17,22 @@
     </resultMap>
 
     <sql id="BaseColumns">
-        id, username, password, real_name, phone, email,
-        dept_id, status, is_deleted, create_time, update_time
+        id, username, password, nickname, phone, email,
+        status, is_deleted, create_time, update_time
     </sql>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO sys_user (username, password, real_name, phone, email, dept_id, status)
-        VALUES (#{username}, #{password}, #{realName}, #{phone}, #{email}, #{deptId}, #{status})
+        INSERT INTO sys_user (username, password, nickname, phone, email, status)
+        VALUES (#{username}, #{password}, #{nickname}, #{phone}, #{email}, #{status})
     </insert>
 
     <update id="update">
         UPDATE sys_user
         <set>
-            <if test="realName != null">real_name = #{realName},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="nickname != null">nickname = #{nickname},</if>
             <if test="phone != null">phone = #{phone},</if>
             <if test="email != null">email = #{email},</if>
-            <if test="deptId != null">dept_id = #{deptId},</if>
             <if test="status != null">status = #{status},</if>
         </set>
         WHERE id = #{id} AND is_deleted = 0
@@ -49,18 +48,22 @@
         WHERE id = #{id} AND is_deleted = 0
     </select>
 
-    <select id="selectList" resultMap="BaseResultMap">
-        SELECT <include refid="BaseColumns"/>
-        FROM sys_user
-        WHERE is_deleted = 0
+    <sql id="searchCondition">
         <if test="keyword != null and keyword != ''">
             AND (username LIKE CONCAT('%', #{keyword}, '%')
-                 OR real_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR nickname LIKE CONCAT('%', #{keyword}, '%')
                  OR phone LIKE CONCAT('%', #{keyword}, '%'))
         </if>
         <if test="status != null">
             AND status = #{status}
         </if>
+    </sql>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM sys_user
+        WHERE is_deleted = 0
+        <include refid="searchCondition"/>
         ORDER BY id DESC
         LIMIT #{offset}, #{limit}
     </select>
@@ -76,14 +79,7 @@
         SELECT COUNT(*)
         FROM sys_user
         WHERE is_deleted = 0
-        <if test="keyword != null and keyword != ''">
-            AND (username LIKE CONCAT('%', #{keyword}, '%')
-                 OR real_name LIKE CONCAT('%', #{keyword}, '%')
-                 OR phone LIKE CONCAT('%', #{keyword}, '%'))
-        </if>
-        <if test="status != null">
-            AND status = #{status}
-        </if>
+        <include refid="searchCondition"/>
     </select>
 
 </mapper>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.production.mapper.ProTaskMapper">
+
+    <resultMap id="BaseResultMap" type="ProTask">
+        <id property="id" column="id"/>
+        <result property="taskNo" column="task_no"/>
+        <result property="workOrderId" column="work_order_id"/>
+        <result property="dispatchId" column="dispatch_id"/>
+        <result property="productionLine" column="production_line"/>
+        <result property="planQuantity" column="plan_quantity" jdbcType="DECIMAL"/>
+        <result property="completeQuantity" column="complete_quantity" jdbcType="DECIMAL"/>
+        <result property="defectQuantity" column="defect_quantity" jdbcType="DECIMAL"/>
+        <result property="sourceType" column="source_type"/>
+        <result property="status" column="status"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, task_no, work_order_id, dispatch_id, production_line,
+        plan_quantity, complete_quantity, defect_quantity, source_type, status,
+        start_time, end_time, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO pro_task (task_no, work_order_id, dispatch_id, production_line,
+            plan_quantity, complete_quantity, defect_quantity, source_type, status,
+            start_time, end_time, create_time, update_time)
+        VALUES (#{taskNo}, #{workOrderId}, #{dispatchId}, #{productionLine},
+            #{planQuantity}, #{completeQuantity}, #{defectQuantity}, #{sourceType}, #{status},
+            #{startTime}, #{endTime}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="update">
+        UPDATE pro_task
+        <set>
+            <if test="dispatchId != null">dispatch_id = #{dispatchId},</if>
+            <if test="productionLine != null">production_line = #{productionLine},</if>
+            <if test="planQuantity != null">plan_quantity = #{planQuantity},</if>
+            <if test="completeQuantity != null">complete_quantity = #{completeQuantity},</if>
+            <if test="defectQuantity != null">defect_quantity = #{defectQuantity},</if>
+            <if test="sourceType != null">source_type = #{sourceType},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE pro_task SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM pro_task WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM pro_task WHERE is_deleted = 0
+        <if test="taskNo != null and taskNo != ''">
+            AND task_no LIKE CONCAT('%', #{taskNo}, '%')
+        </if>
+        <if test="workOrderId != null">
+            AND work_order_id = #{workOrderId}
+        </if>
+        <if test="productionLine != null and productionLine != ''">
+            AND production_line = #{productionLine}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="sourceType != null">
+            AND source_type = #{sourceType}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*) FROM pro_task WHERE is_deleted = 0
+        <if test="taskNo != null and taskNo != ''">
+            AND task_no LIKE CONCAT('%', #{taskNo}, '%')
+        </if>
+        <if test="workOrderId != null">
+            AND work_order_id = #{workOrderId}
+        </if>
+        <if test="productionLine != null and productionLine != ''">
+            AND production_line = #{productionLine}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="sourceType != null">
+            AND source_type = #{sourceType}
+        </if>
+    </select>
+
+</mapper>

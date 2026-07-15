@@ -16,8 +16,6 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.List;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -49,9 +47,7 @@ class AuthControllerTest {
         LoginVO loginVO = LoginVO.builder()
                 .userId(1L)
                 .username("admin")
-                .realName("管理员")
-                .deptId(1L)
-                .roles(List.of("ADMIN"))
+                .nickname("管理员")
                 .build();
 
         when(sysUserService.login("admin", "123456")).thenReturn(loginVO);
@@ -63,7 +59,7 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.data.userId").value(1))
                 .andExpect(jsonPath("$.data.username").value("admin"))
-                .andExpect(jsonPath("$.data.roles[0]").value("ADMIN"));
+                .andExpect(jsonPath("$.data.nickname").value("管理员"));
     }
 
     @Test
@@ -116,8 +112,7 @@ class AuthControllerTest {
         LoginVO loginVO = LoginVO.builder()
                 .userId(1L)
                 .username("admin")
-                .realName("管理员")
-                .roles(List.of("ADMIN"))
+                .nickname("管理员")
                 .build();
 
         MockHttpSession session = new MockHttpSession();

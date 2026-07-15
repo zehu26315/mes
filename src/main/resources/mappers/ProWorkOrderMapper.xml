@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.production.mapper.ProWorkOrderMapper">
+
+    <resultMap id="BaseResultMap" type="ProWorkOrder">
+        <id property="id" column="id"/>
+        <result property="workOrderNo" column="work_order_no"/>
+        <result property="materialId" column="material_id"/>
+        <result property="planQuantity" column="plan_quantity" jdbcType="DECIMAL"/>
+        <result property="actualQuantity" column="actual_quantity" jdbcType="DECIMAL"/>
+        <result property="planStartTime" column="plan_start_time"/>
+        <result property="planEndTime" column="plan_end_time"/>
+        <result property="actualStartTime" column="actual_start_time"/>
+        <result property="actualEndTime" column="actual_end_time"/>
+        <result property="routeId" column="route_id"/>
+        <result property="sourceType" column="source_type"/>
+        <result property="status" column="status"/>
+        <result property="priority" column="priority"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, work_order_no, material_id, plan_quantity, actual_quantity,
+        plan_start_time, plan_end_time, actual_start_time, actual_end_time,
+        route_id, source_type, status, priority, remark, create_by,
+        is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO pro_work_order (work_order_no, material_id, plan_quantity, actual_quantity,
+            plan_start_time, plan_end_time, actual_start_time, actual_end_time,
+            route_id, source_type, status, priority, remark, create_by, create_time, update_time)
+        VALUES (#{workOrderNo}, #{materialId}, #{planQuantity}, #{actualQuantity},
+            #{planStartTime}, #{planEndTime}, #{actualStartTime}, #{actualEndTime},
+            #{routeId}, #{sourceType}, #{status}, #{priority}, #{remark}, #{createBy},
+            #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="update">
+        UPDATE pro_work_order
+        <set>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="planQuantity != null">plan_quantity = #{planQuantity},</if>
+            <if test="actualQuantity != null">actual_quantity = #{actualQuantity},</if>
+            <if test="planStartTime != null">plan_start_time = #{planStartTime},</if>
+            <if test="planEndTime != null">plan_end_time = #{planEndTime},</if>
+            <if test="actualStartTime != null">actual_start_time = #{actualStartTime},</if>
+            <if test="actualEndTime != null">actual_end_time = #{actualEndTime},</if>
+            <if test="routeId != null">route_id = #{routeId},</if>
+            <if test="sourceType != null">source_type = #{sourceType},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="priority != null">priority = #{priority},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE pro_work_order SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM pro_work_order WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM pro_work_order WHERE is_deleted = 0
+        <if test="workOrderNo != null and workOrderNo != ''">
+            AND work_order_no LIKE CONCAT('%', #{workOrderNo}, '%')
+        </if>
+        <if test="materialId != null">
+            AND material_id = #{materialId}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="sourceType != null">
+            AND source_type = #{sourceType}
+        </if>
+        <if test="priority != null">
+            AND priority = #{priority}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*) FROM pro_work_order WHERE is_deleted = 0
+        <if test="workOrderNo != null and workOrderNo != ''">
+            AND work_order_no LIKE CONCAT('%', #{workOrderNo}, '%')
+        </if>
+        <if test="materialId != null">
+            AND material_id = #{materialId}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="sourceType != null">
+            AND source_type = #{sourceType}
+        </if>
+        <if test="priority != null">
+            AND priority = #{priority}
+        </if>
+    </select>
+
+</mapper>

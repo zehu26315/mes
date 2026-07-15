@@ -10,25 +10,6 @@ public interface CacheNames {
     String SYS_USER = "sys_user";
     String SYS_USER_LIST = "sys_user_list";
 
-    // ========== System: Role ==========
-    String SYS_ROLE = "sys_role";
-    String SYS_ROLE_ALL = "sys_role_all";
-    String SYS_ROLE_LIST = "sys_role_list";
-
-    // ========== System: Menu ==========
-    String SYS_MENU = "sys_menu";
-    String SYS_MENU_TREE = "sys_menu_tree";
-    String SYS_MENU_LIST = "sys_menu_list";
-
-    // ========== System: Department ==========
-    String SYS_DEPT = "sys_dept";
-    String SYS_DEPT_TREE = "sys_dept_tree";
-    String SYS_DEPT_LIST = "sys_dept_list";
-
-    // ========== System: Config ==========
-    String SYS_CONFIG = "sys_config";
-    String SYS_CONFIG_ALL = "sys_config_all";
-
     // ========== System: Notice ==========
     String SYS_NOTICE = "sys_notice";
     String SYS_NOTICE_LIST = "sys_notice_list";
@@ -36,41 +17,96 @@ public interface CacheNames {
     // ========== System: Login Log ==========
     String SYS_LOGIN_LOG = "sys_login_log";
 
-    // ========== Master Data: Product ==========
-    String MD_PRODUCT = "md_product";
-    String MD_PRODUCT_LIST = "md_product_list";
+    // ========== Equipment: Ledger ==========
+    String EQUIP_LEDGER = "equip_ledger";
+    String EQUIP_LEDGER_LIST = "equip_ledger_list";
 
-    // ========== Master Data: Material ==========
-    String MD_MATERIAL = "md_material";
-    String MD_MATERIAL_LIST = "md_material_list";
+    // ========== Equipment: Maintenance ==========
+    String EQUIP_MAINTENANCE = "equip_maintenance";
+    String EQUIP_MAINTENANCE_LIST = "equip_maintenance_list";
 
-    // ========== Master Data: Material Category ==========
-    String MD_MATERIAL_CATEGORY = "md_material_category";
-    String MD_MATERIAL_CATEGORY_LIST = "md_material_category_list";
+    // ========== Equipment: Inspection ==========
+    String EQUIP_INSPECTION = "equip_inspection";
+    String EQUIP_INSPECTION_LIST = "equip_inspection_list";
+
+    // ========== Equipment: Repair ==========
+    String EQUIP_REPAIR = "equip_repair";
+    String EQUIP_REPAIR_LIST = "equip_repair_list";
+
+    // ========== Andon: Config ==========
+    String ANDON_CONFIG = "andon_config";
+    String ANDON_CONFIG_LIST = "andon_config_list";
+
+    // ========== Andon: Record ==========
+    String ANDON_RECORD = "andon_record";
+    String ANDON_RECORD_LIST = "andon_record_list";
+
+    // ========== Barcode: Rule ==========
+    String BARCODE_RULE = "barcode_rule";
+    String BARCODE_RULE_LIST = "barcode_rule_list";
+
+    // ========== Barcode: Record ==========
+    String BARCODE_RECORD = "barcode_record";
+    String BARCODE_RECORD_LIST = "barcode_record_list";
+
+    // ========== Production: Order ==========
+    String PROD_ORDER = "prod_order";
+    String PROD_ORDER_LIST = "prod_order_list";
+
+    // ========== Production: WorkOrder ==========
+    String PROD_WORK_ORDER = "prod_work_order";
+    String PROD_WORK_ORDER_LIST = "prod_work_order_list";
+
+    // ========== Production: Task ==========
+    String PROD_TASK = "prod_task";
+    String PROD_TASK_LIST = "prod_task_list";
+
+    // ========== Production: Dispatch ==========
+    String PROD_DISPATCH = "prod_dispatch";
+    String PROD_DISPATCH_LIST = "prod_dispatch_list";
+
+    // ========== Production: Completion ==========
+    String PROD_COMPLETION = "prod_completion";
+    String PROD_COMPLETION_LIST = "prod_completion_list";
+
+    // ========== Production: Repair ==========
+    String PROD_REPAIR = "prod_repair";
+    String PROD_REPAIR_LIST = "prod_repair_list";
+
+    // ========== Production: Report ==========
+    String PROD_REPORT = "prod_report";
+    String PROD_REPORT_LIST = "prod_report_list";
+
+    // ========== Process: Operation ==========
+    String PRC_OPERATION = "prc_operation";
+    String PRC_OPERATION_LIST = "prc_operation_list";
 
     // ========== Process: Route ==========
-    String PROCESS_ROUTE = "process_route";
-    String PROCESS_ROUTE_LIST = "process_route_list";
+    String PRC_ROUTE = "prc_route";
+    String PRC_ROUTE_LIST = "prc_route_list";
 
-    // ========== Process: Step ==========
-    String PROCESS_STEP = "process_step";
+    // ========== Process: RouteDetail ==========
+    String PRC_ROUTE_DETAIL = "prc_route_detail";
+    String PRC_ROUTE_DETAIL_LIST = "prc_route_detail_list";
 
-    // ========== Warehouse ==========
-    String WH_WAREHOUSE = "wh_warehouse";
-    String WH_WAREHOUSE_ALL = "wh_warehouse_all";
+    // ========== Process: SOP ==========
+    String PRC_SOP = "prc_sop";
+    String PRC_SOP_LIST = "prc_sop_list";
 
-    // ========== Equipment ==========
-    String EQUIP_CATEGORY = "equip_category";
-    String EQUIP_CATEGORY_TREE = "equip_category_tree";
-    String EQUIP_MANUFACTURER = "equip_manufacturer";
-    String EQUIP_MANUFACTURER_ALL = "equip_manufacturer_all";
-    String EQUIP_ASSET = "equip_asset";
-    String EQUIP_ASSET_LIST = "equip_asset_list";
+    // ========== Quality: Inspection ==========
+    String QUALITY_INSPECTION = "quality_inspection";
+    String QUALITY_INSPECTION_LIST = "quality_inspection_list";
 
-    // ========== Wages ==========
-    String WAGES_RECORD = "wages_record";
-    String WAGES_RECORD_LIST = "wages_record_list";
+    // ========== Wages: PieceWage ==========
+    String WAGES_PIECE = "wages_piece";
+    String WAGES_PIECE_LIST = "wages_piece_list";
 
-    // ========== Dashboard ==========
-    String DASHBOARD = "dashboard";
+    // ========== Trace: Material ==========
+    String TRACE_MATERIAL = "trace_material";
+    String TRACE_MATERIAL_LIST = "trace_material_list";
+
+    // ========== Trace: Product ==========
+    String TRACE_PRODUCT = "trace_product";
+    String TRACE_PRODUCT_LIST = "trace_product_list";
+
 }

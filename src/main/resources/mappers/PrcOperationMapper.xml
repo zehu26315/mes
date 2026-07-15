@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.process.mapper.PrcOperationMapper">
+
+    <resultMap id="BaseResultMap" type="PrcOperation">
+        <id property="id" column="id"/>
+        <result property="operationCode" column="operation_code"/>
+        <result property="operationName" column="operation_name"/>
+        <result property="operationType" column="operation_type"/>
+        <result property="sopId" column="sop_id"/>
+        <result property="description" column="description"/>
+        <result property="status" column="status"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, operation_code, operation_name, operation_type, sop_id, description,
+        status, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO prc_operation (operation_code, operation_name, operation_type, sop_id,
+            description, status, create_time, update_time)
+        VALUES (#{operationCode}, #{operationName}, #{operationType}, #{sopId},
+            #{description}, #{status}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="update">
+        UPDATE prc_operation
+        <set>
+            <if test="operationName != null">operation_name = #{operationName},</if>
+            <if test="operationType != null">operation_type = #{operationType},</if>
+            <if test="sopId != null">sop_id = #{sopId},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="status != null">status = #{status},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE prc_operation SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM prc_operation WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM prc_operation WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (operation_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR operation_name LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="operationCode != null and operationCode != ''">
+            AND operation_code LIKE CONCAT('%', #{operationCode}, '%')
+        </if>
+        <if test="operationName != null and operationName != ''">
+            AND operation_name LIKE CONCAT('%', #{operationName}, '%')
+        </if>
+        <if test="operationType != null">
+            AND operation_type = #{operationType}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*) FROM prc_operation WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (operation_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR operation_name LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="operationCode != null and operationCode != ''">
+            AND operation_code LIKE CONCAT('%', #{operationCode}, '%')
+        </if>
+        <if test="operationName != null and operationName != ''">
+            AND operation_name LIKE CONCAT('%', #{operationName}, '%')
+        </if>
+        <if test="operationType != null">
+            AND operation_type = #{operationType}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+</mapper>

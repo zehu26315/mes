@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 public class AndonConfig {
 
     private Long id;
-    private String configName;
-    private Long andonTypeId;
-    private String workCenter;
-    private String triggerCondition;
+    private String andonType;
+    private String andonName;
+    private Integer handleType;
     private String notifyUsers;
-    private Integer escalationTime;
+    private Integer notifyMethod;
+    private String productionLine;
     private Integer status;
     private Integer isDeleted;
     private LocalDateTime createTime;

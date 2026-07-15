@@ -3,27 +3,21 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <settings>
-        <!-- 下划线命名转驼峰 -->
         <setting name="mapUnderscoreToCamelCase" value="true"/>
-        <!-- 日志实现 -->
         <setting name="logImpl" value="LOG4J2"/>
-        <!-- 延迟加载 -->
         <setting name="lazyLoadingEnabled" value="true"/>
         <setting name="aggressiveLazyLoading" value="false"/>
     </settings>
 
     <typeAliases>
         <package name="com.example.mes.modules.system.entity"/>
-        <package name="com.example.mes.modules.masterdata.entity"/>
-        <package name="com.example.mes.modules.process.entity"/>
-        <package name="com.example.mes.modules.production.entity"/>
-        <package name="com.example.mes.modules.material.entity"/>
-        <package name="com.example.mes.modules.warehouse.entity"/>
         <package name="com.example.mes.modules.equipment.entity"/>
-        <package name="com.example.mes.modules.quality.entity"/>
         <package name="com.example.mes.modules.andon.entity"/>
         <package name="com.example.mes.modules.barcode.entity"/>
-        <package name="com.example.mes.modules.trace.entity"/>
+        <package name="com.example.mes.modules.production.entity"/>
+        <package name="com.example.mes.modules.process.entity"/>
+        <package name="com.example.mes.modules.quality.entity"/>
         <package name="com.example.mes.modules.wages.entity"/>
+        <package name="com.example.mes.modules.trace.entity"/>
     </typeAliases>
 </configuration>

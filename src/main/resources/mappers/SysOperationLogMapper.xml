@@ -5,33 +5,56 @@
 
     <resultMap id="BaseResultMap" type="SysOperationLog">
         <id property="id" column="id"/>
-        <result property="userId" column="user_id"/>
-        <result property="username" column="username"/>
-        <result property="operation" column="operation"/>
+        <result property="operationIp" column="operation_ip"/>
+        <result property="operLocation" column="oper_location"/>
         <result property="method" column="method"/>
-        <result property="params" column="params"/>
-        <result property="ip" column="ip"/>
-        <result property="status" column="status"/>
-        <result property="errorMsg" column="error_msg"/>
-        <result property="duration" column="duration"/>
+        <result property="args" column="args"/>
+        <result property="operationName" column="operation_name"/>
+        <result property="operationType" column="operation_type"/>
+        <result property="returnValue" column="return_value"/>
+        <result property="isDeleted" column="is_deleted"/>
         <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
     </resultMap>
 
     <sql id="BaseColumns">
-        id, user_id, username, operation, method, params, ip,
-        status, error_msg, duration, create_time
+        id, operation_ip, oper_location, method, args,
+        operation_name, operation_type, return_value,
+        is_deleted, create_time, update_time
     </sql>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO sys_operation_log (user_id, username, operation, method, params,
-                                       ip, status, error_msg, duration)
-        VALUES (#{userId}, #{username}, #{operation}, #{method}, #{params},
-                #{ip}, #{status}, #{errorMsg}, #{duration})
+        INSERT INTO sys_operation_log (operation_ip, oper_location, method, args,
+                                       operation_name, operation_type, return_value)
+        VALUES (#{operationIp}, #{operLocation}, #{method}, #{args},
+                #{operationName}, #{operationType}, #{returnValue})
     </insert>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM sys_operation_log
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
 
     <select id="selectList" resultMap="BaseResultMap">
         SELECT <include refid="BaseColumns"/>
         FROM sys_operation_log
+        WHERE is_deleted = 0
+        <if test="operationName != null and operationName != ''">
+            AND operation_name LIKE CONCAT('%', #{operationName}, '%')
+        </if>
+        <if test="operationType != null and operationType != ''">
+            AND operation_type = #{operationType}
+        </if>
+        <if test="operationIp != null and operationIp != ''">
+            AND operation_ip LIKE CONCAT('%', #{operationIp}, '%')
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND create_time &lt;= #{endTime}
+        </if>
         ORDER BY create_time DESC
         LIMIT #{offset}, #{limit}
     </select>
@@ -39,6 +62,90 @@
     <select id="countList" resultType="long">
         SELECT COUNT(*)
         FROM sys_operation_log
+        WHERE is_deleted = 0
+        <if test="operationName != null and operationName != ''">
+            AND operation_name LIKE CONCAT('%', #{operationName}, '%')
+        </if>
+        <if test="operationType != null and operationType != ''">
+            AND operation_type = #{operationType}
+        </if>
+        <if test="operationIp != null and operationIp != ''">
+            AND operation_ip LIKE CONCAT('%', #{operationIp}, '%')
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND create_time &lt;= #{endTime}
+        </if>
     </select>
+
+    <update id="deleteById">
+        UPDATE sys_operation_log SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <update id="deleteBatch">
+        UPDATE sys_operation_log SET is_deleted = 1 WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="statsByType" resultType="java.util.HashMap">
+        SELECT operation_type AS name, COUNT(*) AS value
+        FROM sys_operation_log
+        GROUP BY operation_type
+        ORDER BY value DESC
+    </select>
+
+    <select id="statsByOperator" resultType="java.util.HashMap">
+        SELECT operation_name AS name, COUNT(*) AS value
+        FROM sys_operation_log
+        GROUP BY operation_name
+        ORDER BY value DESC
+    </select>
+
+    <select id="countTotal" resultType="long">
+        SELECT COUNT(*) FROM sys_operation_log
+    </select>
+
+    <select id="countToday" resultType="long">
+        SELECT COUNT(*) FROM sys_operation_log
+        WHERE DATE(create_time) = CURDATE()
+    </select>
+
+    <select id="countWeek" resultType="long">
+        SELECT COUNT(*) FROM sys_operation_log
+        WHERE YEARWEEK(create_time, 1) = YEARWEEK(CURDATE(), 1)
+    </select>
+
+    <select id="countMonth" resultType="long">
+        SELECT COUNT(*) FROM sys_operation_log
+        WHERE DATE_FORMAT(create_time, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+    </select>
+
+    <select id="getEarliestTime" resultType="java.time.LocalDateTime">
+        SELECT MIN(create_time) FROM sys_operation_log
+    </select>
+
+    <select id="getLatestTime" resultType="java.time.LocalDateTime">
+        SELECT MAX(create_time) FROM sys_operation_log
+    </select>
+
+    <select id="getEarliestDate" resultType="java.time.LocalDateTime">
+        SELECT MIN(create_time) FROM sys_operation_log
+        WHERE create_time &lt; DATE_SUB(NOW(), INTERVAL #{keepDays} DAY)
+    </select>
+
+    <select id="countOlderThan" resultType="long">
+        SELECT COUNT(*)
+        FROM sys_operation_log
+        WHERE create_time &lt; DATE_SUB(NOW(), INTERVAL #{keepDays} DAY)
+    </select>
+
+    <delete id="deleteOlderThan">
+        DELETE FROM sys_operation_log
+        WHERE create_time &lt; DATE_SUB(NOW(), INTERVAL #{keepDays} DAY)
+    </delete>
 
 </mapper>

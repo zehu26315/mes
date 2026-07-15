@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.production.mapper.ProDispatchMapper">
+
+    <resultMap id="BaseResultMap" type="ProDispatch">
+        <id property="id" column="id"/>
+        <result property="dispatchNo" column="dispatch_no"/>
+        <result property="workOrderId" column="work_order_id"/>
+        <result property="operationId" column="operation_id"/>
+        <result property="productionLine" column="production_line"/>
+        <result property="planQuantity" column="plan_quantity" jdbcType="DECIMAL"/>
+        <result property="actualQuantity" column="actual_quantity" jdbcType="DECIMAL"/>
+        <result property="planStartTime" column="plan_start_time"/>
+        <result property="planEndTime" column="plan_end_time"/>
+        <result property="assigneeId" column="assignee_id"/>
+        <result property="status" column="status"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, dispatch_no, work_order_id, operation_id, production_line,
+        plan_quantity, actual_quantity, plan_start_time, plan_end_time,
+        assignee_id, status, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO pro_dispatch (dispatch_no, work_order_id, operation_id, production_line,
+            plan_quantity, actual_quantity, plan_start_time, plan_end_time,
+            assignee_id, status, create_time, update_time)
+        VALUES (#{dispatchNo}, #{workOrderId}, #{operationId}, #{productionLine},
+            #{planQuantity}, #{actualQuantity}, #{planStartTime}, #{planEndTime},
+            #{assigneeId}, #{status}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="update">
+        UPDATE pro_dispatch
+        <set>
+            <if test="operationId != null">operation_id = #{operationId},</if>
+            <if test="productionLine != null">production_line = #{productionLine},</if>
+            <if test="planQuantity != null">plan_quantity = #{planQuantity},</if>
+            <if test="actualQuantity != null">actual_quantity = #{actualQuantity},</if>
+            <if test="planStartTime != null">plan_start_time = #{planStartTime},</if>
+            <if test="planEndTime != null">plan_end_time = #{planEndTime},</if>
+            <if test="assigneeId != null">assignee_id = #{assigneeId},</if>
+            <if test="status != null">status = #{status},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE pro_dispatch SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM pro_dispatch WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM pro_dispatch WHERE is_deleted = 0
+        <if test="dispatchNo != null and dispatchNo != ''">
+            AND dispatch_no LIKE CONCAT('%', #{dispatchNo}, '%')
+        </if>
+        <if test="workOrderId != null">
+            AND work_order_id = #{workOrderId}
+        </if>
+        <if test="productionLine != null and productionLine != ''">
+            AND production_line = #{productionLine}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="assigneeId != null">
+            AND assignee_id = #{assigneeId}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*) FROM pro_dispatch WHERE is_deleted = 0
+        <if test="dispatchNo != null and dispatchNo != ''">
+            AND dispatch_no LIKE CONCAT('%', #{dispatchNo}, '%')
+        </if>
+        <if test="workOrderId != null">
+            AND work_order_id = #{workOrderId}
+        </if>
+        <if test="productionLine != null and productionLine != ''">
+            AND production_line = #{productionLine}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="assigneeId != null">
+            AND assignee_id = #{assigneeId}
+        </if>
+    </select>
+
+</mapper>

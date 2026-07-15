@@ -14,13 +14,12 @@ import java.time.LocalDateTime;
 public class BarcodeRule {
 
     private Long id;
-    private String ruleName;
     private String ruleCode;
-    private Long barcodeTypeId;
+    private String ruleName;
+    private String ruleType;
     private String prefix;
     private String dateFormat;
     private Integer serialLength;
-    private String separator;
     private Integer status;
     private Integer isDeleted;
     private LocalDateTime createTime;

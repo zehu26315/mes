@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.equipment.mapper.EquipLedgerMapper">
+
+    <resultMap id="BaseResultMap" type="EquipLedger">
+        <id property="id" column="id"/>
+        <result property="equipmentCode" column="equipment_code"/>
+        <result property="equipmentName" column="equipment_name"/>
+        <result property="category" column="category"/>
+        <result property="equipmentModel" column="equipment_model"/>
+        <result property="manufacturer" column="manufacturer"/>
+        <result property="workshop" column="workshop"/>
+        <result property="serialNo" column="serial_no"/>
+        <result property="purchaseDate" column="purchase_date"/>
+        <result property="warrantyDate" column="warranty_date"/>
+        <result property="location" column="location"/>
+        <result property="productionLine" column="production_line"/>
+        <result property="ratedPower" column="rated_power" jdbcType="DECIMAL"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, equipment_code, equipment_name, category, equipment_model, manufacturer, workshop,
+        serial_no, purchase_date, warranty_date, location, production_line, rated_power,
+        status, remark, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO eqp_ledger (equipment_code, equipment_name, category, equipment_model, manufacturer,
+            workshop, serial_no, purchase_date, warranty_date, location, production_line, rated_power,
+            status, remark, create_time, update_time)
+        VALUES (#{equipmentCode}, #{equipmentName}, #{category}, #{equipmentModel}, #{manufacturer},
+            #{workshop}, #{serialNo}, #{purchaseDate}, #{warrantyDate}, #{location}, #{productionLine},
+            #{ratedPower}, #{status}, #{remark}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="update">
+        UPDATE eqp_ledger
+        <set>
+            <if test="equipmentCode != null">equipment_code = #{equipmentCode},</if>
+            <if test="equipmentName != null">equipment_name = #{equipmentName},</if>
+            <if test="category != null">category = #{category},</if>
+            <if test="equipmentModel != null">equipment_model = #{equipmentModel},</if>
+            <if test="manufacturer != null">manufacturer = #{manufacturer},</if>
+            <if test="workshop != null">workshop = #{workshop},</if>
+            <if test="serialNo != null">serial_no = #{serialNo},</if>
+            <if test="purchaseDate != null">purchase_date = #{purchaseDate},</if>
+            <if test="warrantyDate != null">warranty_date = #{warrantyDate},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="productionLine != null">production_line = #{productionLine},</if>
+            <if test="ratedPower != null">rated_power = #{ratedPower},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE eqp_ledger SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM eqp_ledger
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM eqp_ledger
+        WHERE is_deleted = 0
+        <if test="equipmentCode != null and equipmentCode != ''">
+            AND equipment_code = #{equipmentCode}
+        </if>
+        <if test="equipmentName != null and equipmentName != ''">
+            AND equipment_name LIKE CONCAT('%', #{equipmentName}, '%')
+        </if>
+        <if test="category != null and category != ''">
+            AND category = #{category}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (equipment_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR equipment_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR equipment_model LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM eqp_ledger
+        WHERE is_deleted = 0
+        <if test="equipmentCode != null and equipmentCode != ''">
+            AND equipment_code = #{equipmentCode}
+        </if>
+        <if test="equipmentName != null and equipmentName != ''">
+            AND equipment_name LIKE CONCAT('%', #{equipmentName}, '%')
+        </if>
+        <if test="category != null and category != ''">
+            AND category = #{category}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (equipment_code LIKE CONCAT('%', #{keyword}, '%')
+                 OR equipment_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR equipment_model LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+    </select>
+
+</mapper>

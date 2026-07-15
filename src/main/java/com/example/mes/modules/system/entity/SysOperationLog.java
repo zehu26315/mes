@@ -14,15 +14,14 @@ import java.time.LocalDateTime;
 public class SysOperationLog {
 
     private Long id;
-    private Long userId;
-    private String username;
-    private String operation;
+    private String operationIp;
+    private String operLocation;
     private String method;
-    private String params;
-    private String ip;
-    private Integer status;
-    private String errorMsg;
-    private Long duration;
+    private String args;
+    private String operationName;
+    private String operationType;
+    private String returnValue;
+    private Integer isDeleted;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

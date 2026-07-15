@@ -5,51 +5,66 @@
 
     <resultMap id="BaseResultMap" type="com.example.mes.modules.andon.entity.AndonRecord">
         <id property="id" column="id"/>
-        <result property="andonTypeId" column="andon_type_id"/>
+        <result property="andonConfigId" column="andon_config_id"/>
         <result property="reasonId" column="reason_id"/>
-        <result property="workCenter" column="work_center"/>
         <result property="productionLine" column="production_line"/>
+        <result property="workstation" column="workstation"/>
+        <result property="exceptionType" column="exception_type"/>
+        <result property="initiatorId" column="initiator_id"/>
+        <result property="handlerId" column="handler_id"/>
+        <result property="operationId" column="operation_id"/>
         <result property="equipmentId" column="equipment_id"/>
-        <result property="workOrderId" column="work_order_id"/>
         <result property="description" column="description"/>
-        <result property="status" column="status"/>
-        <result property="severity" column="severity"/>
-        <result property="reporter" column="reporter"/>
-        <result property="handler" column="handler"/>
-        <result property="reportTime" column="report_time"/>
+        <result property="reportUser" column="report_user"/>
+        <result property="handleUser" column="handle_user"/>
+        <result property="initTime" column="init_time"/>
         <result property="confirmTime" column="confirm_time"/>
-        <result property="resolveTime" column="resolve_time"/>
-        <result property="resolveDesc" column="resolve_desc"/>
-        <result property="duration" column="duration"/>
+        <result property="handleTime" column="handle_time"/>
+        <result property="handleResult" column="handle_result"/>
+        <result property="status" column="status"/>
         <result property="isDeleted" column="is_deleted"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
     <sql id="BaseColumns">
-        id, andon_type_id, reason_id, work_center, production_line,
-        equipment_id, work_order_id, description, status, severity,
-        reporter, handler, report_time, confirm_time, resolve_time,
-        resolve_desc, duration, is_deleted, create_time, update_time
+        id, andon_config_id, reason_id, production_line, workstation,
+        exception_type, initiator_id, handler_id, operation_id, equipment_id,
+        description, report_user, handle_user, init_time, confirm_time,
+        handle_time, handle_result, status, is_deleted, create_time, update_time
     </sql>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO andon_record (andon_type_id, reason_id, work_center, production_line,
-                                  equipment_id, work_order_id, description, status, severity,
-                                  reporter, handler, report_time)
-        VALUES (#{andonTypeId}, #{reasonId}, #{workCenter}, #{productionLine},
-                #{equipmentId}, #{workOrderId}, #{description}, #{status}, #{severity},
-                #{reporter}, #{handler}, #{reportTime})
+        INSERT INTO andon_record (andon_config_id, reason_id, production_line, workstation,
+                                  exception_type, initiator_id, handler_id, operation_id, equipment_id,
+                                  description, report_user, handle_user, init_time, status)
+        VALUES (#{andonConfigId}, #{reasonId}, #{productionLine}, #{workstation},
+                #{exceptionType}, #{initiatorId}, #{handlerId}, #{operationId}, #{equipmentId},
+                #{description}, #{reportUser}, #{handleUser}, #{initTime}, #{status})
     </insert>
 
-    <update id="updateStatus">
+    <update id="update">
         UPDATE andon_record
-        SET status = #{status}
-        <if test="handler != null">, handler = #{handler}</if>
-        <if test="confirmTime != null">, confirm_time = #{confirmTime}</if>
-        <if test="resolveTime != null">, resolve_time = #{resolveTime}</if>
-        <if test="resolveDesc != null">, resolve_desc = #{resolveDesc}</if>
-        <if test="duration != null">, duration = #{duration}</if>
+        <set>
+            <if test="andonConfigId != null">andon_config_id = #{andonConfigId},</if>
+            <if test="reasonId != null">reason_id = #{reasonId},</if>
+            <if test="productionLine != null">production_line = #{productionLine},</if>
+            <if test="workstation != null">workstation = #{workstation},</if>
+            <if test="exceptionType != null">exception_type = #{exceptionType},</if>
+            <if test="initiatorId != null">initiator_id = #{initiatorId},</if>
+            <if test="handlerId != null">handler_id = #{handlerId},</if>
+            <if test="operationId != null">operation_id = #{operationId},</if>
+            <if test="equipmentId != null">equipment_id = #{equipmentId},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="reportUser != null">report_user = #{reportUser},</if>
+            <if test="handleUser != null">handle_user = #{handleUser},</if>
+            <if test="initTime != null">init_time = #{initTime},</if>
+            <if test="confirmTime != null">confirm_time = #{confirmTime},</if>
+            <if test="handleTime != null">handle_time = #{handleTime},</if>
+            <if test="handleResult != null">handle_result = #{handleResult},</if>
+            <if test="status != null">status = #{status},</if>
+            update_time = NOW()
+        </set>
         WHERE id = #{id} AND is_deleted = 0
     </update>
 
@@ -69,24 +84,23 @@
         WHERE is_deleted = 0
         <if test="keyword != null and keyword != ''">
             AND (description LIKE CONCAT('%', #{keyword}, '%')
-                 OR work_center LIKE CONCAT('%', #{keyword}, '%')
-                 OR equipment_id LIKE CONCAT('%', #{keyword}, '%')
-                 OR work_order_id LIKE CONCAT('%', #{keyword}, '%'))
+                 OR production_line LIKE CONCAT('%', #{keyword}, '%')
+                 OR workstation LIKE CONCAT('%', #{keyword}, '%'))
         </if>
-        <if test="andonTypeId != null">
-            AND andon_type_id = #{andonTypeId}
+        <if test="andonConfigId != null">
+            AND andon_config_id = #{andonConfigId}
         </if>
-        <if test="status != null and status != ''">
+        <if test="status != null">
             AND status = #{status}
         </if>
-        <if test="workCenter != null and workCenter != ''">
-            AND work_center = #{workCenter}
+        <if test="productionLine != null and productionLine != ''">
+            AND production_line = #{productionLine}
         </if>
         <if test="startTime != null">
-            AND report_time &gt;= #{startTime}
+            AND init_time &gt;= #{startTime}
         </if>
         <if test="endTime != null">
-            AND report_time &lt;= #{endTime}
+            AND init_time &lt;= #{endTime}
         </if>
         ORDER BY id DESC
         LIMIT #{offset}, #{limit}
@@ -98,24 +112,23 @@
         WHERE is_deleted = 0
         <if test="keyword != null and keyword != ''">
             AND (description LIKE CONCAT('%', #{keyword}, '%')
-                 OR work_center LIKE CONCAT('%', #{keyword}, '%')
-                 OR equipment_id LIKE CONCAT('%', #{keyword}, '%')
-                 OR work_order_id LIKE CONCAT('%', #{keyword}, '%'))
+                 OR production_line LIKE CONCAT('%', #{keyword}, '%')
+                 OR workstation LIKE CONCAT('%', #{keyword}, '%'))
         </if>
-        <if test="andonTypeId != null">
-            AND andon_type_id = #{andonTypeId}
+        <if test="andonConfigId != null">
+            AND andon_config_id = #{andonConfigId}
         </if>
-        <if test="status != null and status != ''">
+        <if test="status != null">
             AND status = #{status}
         </if>
-        <if test="workCenter != null and workCenter != ''">
-            AND work_center = #{workCenter}
+        <if test="productionLine != null and productionLine != ''">
+            AND production_line = #{productionLine}
         </if>
         <if test="startTime != null">
-            AND report_time &gt;= #{startTime}
+            AND init_time &gt;= #{startTime}
         </if>
         <if test="endTime != null">
-            AND report_time &lt;= #{endTime}
+            AND init_time &lt;= #{endTime}
         </if>
     </select>
 
@@ -123,13 +136,13 @@
         SELECT <include refid="BaseColumns"/>
         FROM andon_record
         WHERE is_deleted = 0
-          AND status IN ('REPORTED', 'CONFIRMED')
+          AND status IN (1, 2)
         ORDER BY
             CASE status
-                WHEN 'REPORTED' THEN 1
-                WHEN 'CONFIRMED' THEN 2
+                WHEN 1 THEN 1
+                WHEN 2 THEN 2
             END,
-            report_time ASC
+            init_time ASC
     </select>
 
 </mapper>

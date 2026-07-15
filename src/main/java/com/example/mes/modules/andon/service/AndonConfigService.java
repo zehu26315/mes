@@ -13,5 +13,5 @@ public interface AndonConfigService {
 
     AndonConfig getById(Long id);
 
-    PageResult<AndonConfig> list(String keyword, Long andonTypeId, Integer status, int page, int pageSize);
+    PageResult<AndonConfig> list(String keyword, String andonType, Integer status, int page, int pageSize);
 }

@@ -4,8 +4,6 @@ import com.example.mes.common.response.LoginVO;
 import com.example.mes.common.response.PageResult;
 import com.example.mes.modules.system.entity.SysUser;
 
-import java.util.List;
-
 public interface SysUserService {
 
     SysUser createUser(SysUser user);
@@ -17,8 +15,6 @@ public interface SysUserService {
     SysUser getUserById(Long id);
 
     PageResult<SysUser> listUsers(String keyword, Integer status, int page, int pageSize);
-
-    void assignRoles(Long userId, List<Long> roleIds);
 
     LoginVO login(String username, String password);
 }

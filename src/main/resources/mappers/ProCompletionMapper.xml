@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.production.mapper.ProCompletionMapper">
+
+    <resultMap id="BaseResultMap" type="ProCompletion">
+        <id property="id" column="id"/>
+        <result property="completionNo" column="completion_no"/>
+        <result property="workOrderId" column="work_order_id"/>
+        <result property="materialId" column="material_id"/>
+        <result property="planQuantity" column="plan_quantity" jdbcType="DECIMAL"/>
+        <result property="completedQuantity" column="completed_quantity" jdbcType="DECIMAL"/>
+        <result property="qualifiedQuantity" column="qualified_quantity" jdbcType="DECIMAL"/>
+        <result property="defectQuantity" column="defect_quantity" jdbcType="DECIMAL"/>
+        <result property="warehouseId" column="warehouse_id"/>
+        <result property="locationId" column="location_id"/>
+        <result property="completionTime" column="completion_time"/>
+        <result property="inspectorId" column="inspector_id"/>
+        <result property="status" column="status"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, completion_no, work_order_id, material_id,
+        plan_quantity, completed_quantity, qualified_quantity, defect_quantity,
+        warehouse_id, location_id, completion_time, inspector_id,
+        status, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO pro_completion (completion_no, work_order_id, material_id,
+            plan_quantity, completed_quantity, qualified_quantity, defect_quantity,
+            warehouse_id, location_id, completion_time, inspector_id,
+            status, create_time, update_time)
+        VALUES (#{completionNo}, #{workOrderId}, #{materialId},
+            #{planQuantity}, #{completedQuantity}, #{qualifiedQuantity}, #{defectQuantity},
+            #{warehouseId}, #{locationId}, #{completionTime}, #{inspectorId},
+            #{status}, #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="update">
+        UPDATE pro_completion
+        <set>
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="planQuantity != null">plan_quantity = #{planQuantity},</if>
+            <if test="completedQuantity != null">completed_quantity = #{completedQuantity},</if>
+            <if test="qualifiedQuantity != null">qualified_quantity = #{qualifiedQuantity},</if>
+            <if test="defectQuantity != null">defect_quantity = #{defectQuantity},</if>
+            <if test="warehouseId != null">warehouse_id = #{warehouseId},</if>
+            <if test="locationId != null">location_id = #{locationId},</if>
+            <if test="completionTime != null">completion_time = #{completionTime},</if>
+            <if test="inspectorId != null">inspector_id = #{inspectorId},</if>
+            <if test="status != null">status = #{status},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE pro_completion SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM pro_completion WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM pro_completion WHERE is_deleted = 0
+        <if test="completionNo != null and completionNo != ''">
+            AND completion_no LIKE CONCAT('%', #{completionNo}, '%')
+        </if>
+        <if test="workOrderId != null">
+            AND work_order_id = #{workOrderId}
+        </if>
+        <if test="materialId != null">
+            AND material_id = #{materialId}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*) FROM pro_completion WHERE is_deleted = 0
+        <if test="completionNo != null and completionNo != ''">
+            AND completion_no LIKE CONCAT('%', #{completionNo}, '%')
+        </if>
+        <if test="workOrderId != null">
+            AND work_order_id = #{workOrderId}
+        </if>
+        <if test="materialId != null">
+            AND material_id = #{materialId}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+</mapper>

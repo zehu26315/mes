@@ -14,14 +14,14 @@ import java.time.LocalDateTime;
 public class BarcodeRecord {
 
     private Long id;
-    private String barcodeNo;
-    private Long barcodeTypeId;
-    private Long ruleId;
-    private String productCode;
-    private Long workOrderId;
+    private String barcode;
+    private String productModel;
     private String batchNo;
-    private String status;
-    private Integer printCount;
+    private String orderNo;
+    private String productionLine;
+    private LocalDateTime printTime;
+    private String printUser;
+    private Long ruleId;
+    private Integer isDeleted;
     private LocalDateTime createTime;
-    private LocalDateTime updateTime;
 }

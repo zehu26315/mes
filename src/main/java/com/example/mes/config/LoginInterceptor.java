@@ -18,8 +18,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     private static final Set<String> WHITELIST = Set.of(
             "/api/login",
-            "/api/logout",
-            "/api/auth/user-info"
+            "/api/logout"
     );
 
     private static final ObjectMapper objectMapper = new ObjectMapper();

@@ -13,7 +13,7 @@ public interface BarcodeRecordMapper {
 
     BarcodeRecord selectById(@Param("id") Long id);
 
-    BarcodeRecord selectByBarcodeNo(@Param("barcodeNo") String barcodeNo);
+    BarcodeRecord selectByBarcode(@Param("barcode") String barcode);
 
     List<BarcodeRecord> selectList(@Param("keyword") String keyword,
                                     @Param("status") String status,

@@ -2,133 +2,159 @@ package com.example.mes.modules.equipment.controller;
 
 import com.example.mes.common.response.PageResult;
 import com.example.mes.common.response.Result;
-import com.example.mes.common.response.TreeNode;
-import com.example.mes.modules.equipment.entity.*;
-import com.example.mes.modules.equipment.service.*;
+import com.example.mes.modules.equipment.entity.EquipInspection;
+import com.example.mes.modules.equipment.entity.EquipLedger;
+import com.example.mes.modules.equipment.entity.EquipMaintenance;
+import com.example.mes.modules.equipment.entity.EquipRepair;
+import com.example.mes.modules.equipment.service.EquipInspectionService;
+import com.example.mes.modules.equipment.service.EquipLedgerService;
+import com.example.mes.modules.equipment.service.EquipMaintenanceService;
+import com.example.mes.modules.equipment.service.EquipRepairService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/equipment")
 @RequiredArgsConstructor
 public class EquipmentController {
 
-    private final EquipCategoryService categoryService;
-    private final EquipManufacturerService manufacturerService;
-    private final EquipAssetService assetService;
+    private final EquipLedgerService ledgerService;
+    private final EquipInspectionService inspectionService;
+    private final EquipMaintenanceService maintenanceService;
     private final EquipRepairService repairService;
-    private final EquipMaintenancePlanService maintenancePlanService;
 
-    // ===== Categories =====
-    @GetMapping("/categories")
-    public Result<List<TreeNode<EquipCategory>>> categoryTree() { return Result.ok(categoryService.getTree()); }
+    // ==================== Ledger ====================
 
-    @PostMapping("/categories")
-    public Result<EquipCategory> createCategory(@RequestBody EquipCategory e) { return Result.ok(categoryService.create(e)); }
-
-    @PutMapping("/categories/{id}")
-    public Result<EquipCategory> updateCategory(@PathVariable Long id, @RequestBody EquipCategory e) { e.setId(id); return Result.ok(categoryService.update(e)); }
-
-    @DeleteMapping("/categories/{id}")
-    public Result<Void> deleteCategory(@PathVariable Long id) { categoryService.delete(id); return Result.ok(); }
-
-    @GetMapping("/categories/{id}")
-    public Result<EquipCategory> getCategory(@PathVariable Long id) { return Result.ok(categoryService.getById(id)); }
-
-    // ===== Manufacturers =====
-    @GetMapping("/manufacturers")
-    public Result<List<EquipManufacturer>> listManufacturers() { return Result.ok(manufacturerService.listAll()); }
-
-    @PostMapping("/manufacturers")
-    public Result<EquipManufacturer> createManufacturer(@RequestBody EquipManufacturer e) { return Result.ok(manufacturerService.create(e)); }
-
-    @PutMapping("/manufacturers/{id}")
-    public Result<EquipManufacturer> updateManufacturer(@PathVariable Long id, @RequestBody EquipManufacturer e) { e.setId(id); return Result.ok(manufacturerService.update(e)); }
-
-    @DeleteMapping("/manufacturers/{id}")
-    public Result<Void> deleteManufacturer(@PathVariable Long id) { manufacturerService.delete(id); return Result.ok(); }
-
-    // ===== Assets =====
-    @GetMapping("/assets")
-    public Result<PageResult<EquipAsset>> listAssets(@RequestParam(defaultValue = "") String keyword,
-                                                      @RequestParam(required = false) String status,
-                                                      @RequestParam(required = false) Long categoryId,
-                                                      @RequestParam(required = false) String productionLine,
-                                                      @RequestParam(defaultValue = "1") int page,
-                                                      @RequestParam(defaultValue = "10") int pageSize) {
-        return Result.ok(assetService.list(keyword, status, categoryId, productionLine, page, pageSize));
+    @PostMapping("/ledgers")
+    public Result<EquipLedger> createLedger(@RequestBody EquipLedger e) {
+        return Result.ok(ledgerService.create(e));
     }
 
-    @PostMapping("/assets")
-    public Result<EquipAsset> createAsset(@RequestBody EquipAsset e) { return Result.ok(assetService.create(e)); }
-
-    @PutMapping("/assets/{id}")
-    public Result<EquipAsset> updateAsset(@PathVariable Long id, @RequestBody EquipAsset e) { e.setId(id); return Result.ok(assetService.update(e)); }
-
-    @DeleteMapping("/assets/{id}")
-    public Result<Void> deleteAsset(@PathVariable Long id) { assetService.delete(id); return Result.ok(); }
-
-    @GetMapping("/assets/{id}")
-    public Result<EquipAsset> getAsset(@PathVariable Long id) { return Result.ok(assetService.getById(id)); }
-
-    @PutMapping("/assets/{id}/status")
-    public Result<EquipAsset> updateAssetStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
-        return Result.ok(assetService.updateStatus(id, body.get("status"), body.get("reason"), body.get("operator")));
+    @PutMapping("/ledgers/{id}")
+    public Result<EquipLedger> updateLedger(@PathVariable Long id, @RequestBody EquipLedger e) {
+        e.setId(id);
+        return Result.ok(ledgerService.update(e));
     }
 
-    // ===== Maintenance Plans =====
-    @GetMapping("/maintenance-plans")
-    public Result<PageResult<EquipMaintenancePlan>> listMaintenancePlans(@RequestParam(required = false) Long equipId,
-                                                                          @RequestParam(required = false) String status,
-                                                                          @RequestParam(required = false) String startDate,
-                                                                          @RequestParam(required = false) String endDate,
-                                                                          @RequestParam(defaultValue = "1") int page,
-                                                                          @RequestParam(defaultValue = "10") int pageSize) {
-        return Result.ok(maintenancePlanService.list(equipId, status, startDate, endDate, page, pageSize));
+    @DeleteMapping("/ledgers/{id}")
+    public Result<Void> deleteLedger(@PathVariable Long id) {
+        ledgerService.delete(id);
+        return Result.ok();
     }
 
-    @PostMapping("/maintenance-plans")
-    public Result<EquipMaintenancePlan> createMaintenancePlan(@RequestBody EquipMaintenancePlan e) { return Result.ok(maintenancePlanService.create(e)); }
-
-    @PutMapping("/maintenance-plans/{id}")
-    public Result<EquipMaintenancePlan> updateMaintenancePlan(@PathVariable Long id, @RequestBody EquipMaintenancePlan e) { e.setId(id); return Result.ok(maintenancePlanService.update(e)); }
-
-    @DeleteMapping("/maintenance-plans/{id}")
-    public Result<Void> deleteMaintenancePlan(@PathVariable Long id) { maintenancePlanService.delete(id); return Result.ok(); }
-
-    @GetMapping("/maintenance-records")
-    public Result<PageResult<EquipMaintenanceRecord>> listMaintenanceRecords(@RequestParam(required = false) Long equipId,
-                                                                              @RequestParam(required = false) String startDate,
-                                                                              @RequestParam(required = false) String endDate,
-                                                                              @RequestParam(defaultValue = "1") int page,
-                                                                              @RequestParam(defaultValue = "10") int pageSize) {
-        return Result.ok(maintenancePlanService.listRecords(equipId, startDate, endDate, page, pageSize));
+    @GetMapping("/ledgers/{id}")
+    public Result<EquipLedger> getLedger(@PathVariable Long id) {
+        return Result.ok(ledgerService.getById(id));
     }
 
-    @PostMapping("/maintenance-records")
-    public Result<EquipMaintenanceRecord> createMaintenanceRecord(@RequestBody EquipMaintenanceRecord e) { return Result.ok(maintenancePlanService.createRecord(e)); }
-
-    // ===== Repairs =====
-    @GetMapping("/repairs")
-    public Result<PageResult<EquipRepair>> listRepairs(@RequestParam(required = false) Long equipId,
-                                                        @RequestParam(required = false) String status,
+    @GetMapping("/ledgers")
+    public Result<PageResult<EquipLedger>> listLedgers(@RequestParam(defaultValue = "") String keyword,
+                                                        @RequestParam(required = false) String equipmentCode,
+                                                        @RequestParam(required = false) String equipmentName,
+                                                        @RequestParam(required = false) String category,
+                                                        @RequestParam(required = false) Integer status,
                                                         @RequestParam(defaultValue = "1") int page,
                                                         @RequestParam(defaultValue = "10") int pageSize) {
-        return Result.ok(repairService.list(equipId, status, page, pageSize));
+        return Result.ok(ledgerService.list(equipmentCode, equipmentName, category, status, keyword, page, pageSize));
+    }
+
+    // ==================== Inspection ====================
+
+    @PostMapping("/inspections")
+    public Result<EquipInspection> createInspection(@RequestBody EquipInspection e) {
+        return Result.ok(inspectionService.create(e));
+    }
+
+    @PutMapping("/inspections/{id}")
+    public Result<EquipInspection> updateInspection(@PathVariable Long id, @RequestBody EquipInspection e) {
+        e.setId(id);
+        return Result.ok(inspectionService.update(e));
+    }
+
+    @DeleteMapping("/inspections/{id}")
+    public Result<Void> deleteInspection(@PathVariable Long id) {
+        inspectionService.delete(id);
+        return Result.ok();
+    }
+
+    @GetMapping("/inspections/{id}")
+    public Result<EquipInspection> getInspection(@PathVariable Long id) {
+        return Result.ok(inspectionService.getById(id));
+    }
+
+    @GetMapping("/inspections")
+    public Result<PageResult<EquipInspection>> listInspections(@RequestParam(required = false) String keyword,
+                                                                @RequestParam(required = false) Long equipmentId,
+                                                                @RequestParam(required = false) Integer result,
+                                                                @RequestParam(defaultValue = "1") int page,
+                                                                @RequestParam(defaultValue = "10") int pageSize) {
+        return Result.ok(inspectionService.list(keyword, equipmentId, result, page, pageSize));
+    }
+
+    // ==================== Maintenance ====================
+
+    @PostMapping("/maintenance")
+    public Result<EquipMaintenance> createMaintenance(@RequestBody EquipMaintenance e) {
+        return Result.ok(maintenanceService.create(e));
+    }
+
+    @PutMapping("/maintenance/{id}")
+    public Result<EquipMaintenance> updateMaintenance(@PathVariable Long id, @RequestBody EquipMaintenance e) {
+        e.setId(id);
+        return Result.ok(maintenanceService.update(e));
+    }
+
+    @DeleteMapping("/maintenance/{id}")
+    public Result<Void> deleteMaintenance(@PathVariable Long id) {
+        maintenanceService.delete(id);
+        return Result.ok();
+    }
+
+    @GetMapping("/maintenance/{id}")
+    public Result<EquipMaintenance> getMaintenance(@PathVariable Long id) {
+        return Result.ok(maintenanceService.getById(id));
+    }
+
+    @GetMapping("/maintenance")
+    public Result<PageResult<EquipMaintenance>> listMaintenance(@RequestParam(required = false) String keyword,
+                                                                  @RequestParam(required = false) Long equipmentId,
+                                                                  @RequestParam(required = false) String maintenanceType,
+                                                                  @RequestParam(required = false) Integer status,
+                                                                  @RequestParam(defaultValue = "1") int page,
+                                                                  @RequestParam(defaultValue = "10") int pageSize) {
+        return Result.ok(maintenanceService.list(keyword, equipmentId, maintenanceType, status, page, pageSize));
+    }
+
+    // ==================== Repair ====================
+
+    @GetMapping("/repairs")
+    public Result<PageResult<EquipRepair>> listRepairs(@RequestParam(required = false) String keyword,
+                                                        @RequestParam(required = false) Long equipmentId,
+                                                        @RequestParam(required = false) Integer status,
+                                                        @RequestParam(defaultValue = "1") int page,
+                                                        @RequestParam(defaultValue = "10") int pageSize) {
+        return Result.ok(repairService.list(keyword, equipmentId, status, page, pageSize));
     }
 
     @PostMapping("/repairs")
-    public Result<EquipRepair> createRepair(@RequestBody EquipRepair e) { return Result.ok(repairService.create(e)); }
+    public Result<EquipRepair> createRepair(@RequestBody EquipRepair e) {
+        return Result.ok(repairService.create(e));
+    }
 
     @PutMapping("/repairs/{id}")
-    public Result<EquipRepair> updateRepair(@PathVariable Long id, @RequestBody EquipRepair e) { e.setId(id); return Result.ok(repairService.update(e)); }
+    public Result<EquipRepair> updateRepair(@PathVariable Long id, @RequestBody EquipRepair e) {
+        e.setId(id);
+        return Result.ok(repairService.update(e));
+    }
 
     @DeleteMapping("/repairs/{id}")
-    public Result<Void> deleteRepair(@PathVariable Long id) { repairService.delete(id); return Result.ok(); }
+    public Result<Void> deleteRepair(@PathVariable Long id) {
+        repairService.delete(id);
+        return Result.ok();
+    }
 
     @PutMapping("/repairs/{id}/complete")
-    public Result<EquipRepair> completeRepair(@PathVariable Long id) { return Result.ok(repairService.complete(id)); }
+    public Result<EquipRepair> completeRepair(@PathVariable Long id) {
+        return Result.ok(repairService.complete(id));
+    }
 }
