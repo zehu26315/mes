@@ -45,4 +45,31 @@ public class WageRecordServiceImpl implements WageRecordService {
     public void deleteRecord(Long id) {
         wageRecordMapper.deleteById(id);
     }
+
+    @Override
+    @Transactional
+    public WageRecord updateRecord(WageRecord record) {
+        WageRecord existing = wageRecordMapper.selectById(record.getId());
+        if (existing == null) {
+            throw new IllegalArgumentException("工资记录不存在");
+        }
+
+        // 不允许通过 update 接口修改 code 类字段（对齐 SysUserServiceImpl.updateUser）
+        record.setEmployeeCode(null);
+        record.setProcessCode(null);
+
+        // 基于「合并后」的数量/单价重算总额：部分更新时用原值兜底，
+        // 避免缺失字段被当作 0 从而把 total_amount 覆盖为错误值
+        BigDecimal quantity = record.getQuantity() != null ? record.getQuantity() : existing.getQuantity();
+        BigDecimal unitPrice = record.getUnitPrice() != null ? record.getUnitPrice() : existing.getUnitPrice();
+        if (quantity != null && unitPrice != null) {
+            record.setTotalAmount(quantity.multiply(unitPrice));
+        } else {
+            // 不足以计算时置空，动态 <set> 会跳过该列，保留原值
+            record.setTotalAmount(null);
+        }
+
+        wageRecordMapper.update(record);
+        return wageRecordMapper.selectById(record.getId());
+    }
 }

@@ -11,7 +11,7 @@ import com.example.mes.modules.equipment.mapper.EquipAssetMapper;
 import com.example.mes.modules.equipment.mapper.EquipEnergyRecordMapper;
 import com.example.mes.modules.equipment.mapper.EquipOeeRecordMapper;
 import com.example.mes.modules.material.mapper.MatInventoryMapper;
-import com.example.mes.modules.plan.mapper.PlanMpsMapper;
+import com.example.mes.modules.production.constant.WorkOrderStatus;
 import com.example.mes.modules.production.entity.ProdReporting;
 import com.example.mes.modules.production.entity.ProdWip;
 import com.example.mes.modules.production.entity.ProdWorkOrder;
@@ -38,15 +38,19 @@ import java.util.stream.Collectors;
  * summary statistics. All aggregation happens in Java so no new mapper XML
  * is needed.
  *
- * Work order status conventions assumed by this service:
- *   1 – Created / Pending
- *   2 – In Production
- *   3 – Completed
+ * Work order status conventions assumed by this service (Chinese labels,
+ * matching the prod_work_order.status VARCHAR column):
+ *   待生产 – Pending
+ *   生产中 – In Production
+ *   已完成 – Completed
+ *   暂停   – Paused
  */
 @Service
 @RequiredArgsConstructor
 public class DashboardServiceImpl implements DashboardService {
 
+    private static final String STATUS_IN_PROGRESS = WorkOrderStatus.IN_PROGRESS.getCode();
+    private static final String STATUS_COMPLETED = WorkOrderStatus.COMPLETED.getCode();
     private static final int MAX_FETCH = 10_000;
     private static final int RECENT_OEE_LIMIT = 30;
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -57,7 +61,6 @@ public class DashboardServiceImpl implements DashboardService {
     private final EquipOeeRecordMapper equipOeeRecordMapper;
     private final AndonRecordMapper andonRecordMapper;
     private final QualityInspectionOrderMapper qualityInspectionOrderMapper;
-    private final PlanMpsMapper planMpsMapper;
     private final MatInventoryMapper matInventoryMapper;
     private final EquipEnergyRecordMapper equipEnergyRecordMapper;
     private final ProdReportingMapper prodReportingMapper;
@@ -72,8 +75,8 @@ public class DashboardServiceImpl implements DashboardService {
         Map<String, Object> summary = new LinkedHashMap<>();
 
         // ---- counts ----
-        long totalWorkOrders = prodWorkOrderMapper.countList(null, null);
-        long completedWorkOrders = prodWorkOrderMapper.countList(null, 3);
+        long totalWorkOrders = prodWorkOrderMapper.countList(null, null, null, null);
+        long completedWorkOrders = prodWorkOrderMapper.countList(null, STATUS_COMPLETED, null, null);
         long activeAlarms = andonRecordMapper.selectActive().size();
         long totalEquipment = equipAssetMapper.countList(null, null, null, null);
 
@@ -110,7 +113,7 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     @Cacheable(value = CacheNames.DASHBOARD, key = "#root.method.name + ':' + #limit")
     public List<Map<String, Object>> getRecentWorkOrders(int limit) {
-        List<ProdWorkOrder> orders = prodWorkOrderMapper.selectList(null, null, 0, limit);
+        List<ProdWorkOrder> orders = prodWorkOrderMapper.selectList(null, null, null, null, 0, limit);
         return orders.stream().map(o -> {
             Map<String, Object> m = new LinkedHashMap<>();
             m.put("id", o.getId());
@@ -158,7 +161,7 @@ public class DashboardServiceImpl implements DashboardService {
     public List<Map<String, Object>> getProductionLineStatus() {
         // Fetch all data once
         List<EquipAsset> allAssets = equipAssetMapper.selectList(null, null, null, null, 0, MAX_FETCH);
-        List<ProdWorkOrder> activeOrders = prodWorkOrderMapper.selectList(null, 2, 0, MAX_FETCH);
+        List<ProdWorkOrder> activeOrders = prodWorkOrderMapper.selectList(null, STATUS_IN_PROGRESS, null, null, 0, MAX_FETCH);
         List<ProdWip> allWip = prodWipMapper.selectList(0, MAX_FETCH);
         List<AndonRecord> activeAlarms = andonRecordMapper.selectActive();
 
@@ -275,8 +278,8 @@ public class DashboardServiceImpl implements DashboardService {
                         .multiply(BigDecimal.valueOf(100))
                 : BigDecimal.ZERO;
 
-        // Active orders (status = 2 = in production)
-        long activeOrders = prodWorkOrderMapper.countList(null, 2);
+        // Active orders (in production)
+        long activeOrders = prodWorkOrderMapper.countList(null, STATUS_IN_PROGRESS, null, null);
 
         Map<String, Object> stats = new LinkedHashMap<>();
         stats.put("todayOutput", totalGood);

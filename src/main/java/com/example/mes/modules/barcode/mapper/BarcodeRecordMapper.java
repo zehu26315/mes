@@ -16,12 +16,12 @@ public interface BarcodeRecordMapper {
     BarcodeRecord selectByBarcodeNo(@Param("barcodeNo") String barcodeNo);
 
     List<BarcodeRecord> selectList(@Param("keyword") String keyword,
-                                    @Param("status") Integer status,
+                                    @Param("status") String status,
                                     @Param("offset") int offset,
                                     @Param("limit") int limit);
 
     long countList(@Param("keyword") String keyword,
-                   @Param("status") Integer status);
+                   @Param("status") String status);
 
     int deleteById(@Param("id") Long id);
 }

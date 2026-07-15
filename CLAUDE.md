@@ -6,8 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 MES（制造执行系统）后端服务，RESTful API 风格。覆盖碱性锌锰电池制造的完整业务场景。
 
-- **290 Java 源文件** | **69 MyBatis XML Mapper** | **16 业务模块**
+- **282 Java 源文件** | **67 MyBatis XML Mapper** | **13 业务模块**
 - 从 MyBatis-Plus + Thymeleaf（`src1/`，375 文件）迁移到原生 MyBatis + 纯 REST API
+- 从 blog-uzi（旧版 MES）合并了 Notice、LoginLog、WebSocket 功能
+- 升级文档：`docs/UPGRADE.md`（blog-uzi → mes 迁移指南）
 - 迁移文档：`docs/MIGRATION.md`（架构对比、转换规则、模块清单）
 - API 文档：`docs/API.md`（全部端点、参数、返回值）
 
@@ -18,35 +20,40 @@ MES（制造执行系统）后端服务，RESTful API 风格。覆盖碱性锌�
 - **MyBatis 4.0.1** + XML Mapper（数据访问层，无 JPA Entity）
 - **MySQL** — HikariCP 连接池
 - **Redis** — 缓存（Spring Cache）+ HTTP Session（Spring Session）+ RedisTemplate
+- **WebSocket** — STOMP/SockJS（Andon 实时推送）
 - **Log4j2** — 所有 starter 都排除了 `spring-boot-starter-logging`
 - **Lombok** — `@Data`、`@Builder`、`@NoArgsConstructor`、`@AllArgsConstructor`、`@RequiredArgsConstructor`
 - **BCrypt** — `spring-security-crypto`（仅密码加密，无 Spring Security 认证）
+- **认证** — Redis Session + 手写 `LoginInterceptor`（全局 `/api/**` 拦截，白名单放行 `/api/login`、`/api/logout`）
 
 ## 项目结构
 
 ```
 src/main/java/com/example/mes/
-├── MesApplication.java              # 入口，@MapperScan(16模块mapper包)
+├── MesApplication.java              # 入口，@MapperScan(13模块mapper包)
 ├── config/
 │   ├── SecurityConfig.java          # BCryptPasswordEncoder Bean
-│   ├── RedisConfig.java             # @EnableCaching, @EnableRedisHttpSession, RedisTemplate, CacheManager
-│   └── CacheNames.java              # 42个缓存名称常量
+│   ├── RedisConfig.java             # @EnableCaching, RedisSessionRepository, RedisTemplate, CacheManager
+│   ├── CacheNames.java              # 34个缓存名称常量
+│   ├── LoginInterceptor.java        # 登录拦截器（Session 白名单验证）
+│   ├── WebConfig.java               # 拦截器注册（/api/**）
+│   └── WebSocketConfig.java         # STOMP/SockJS 配置（Andon 实时推送）
 ├── common/
 │   ├── response/
 │   │   ├── Result.java              # 统一响应 {code, message, data}
 │   │   ├── PageResult.java          # 分页响应 {total, page, pageSize, rows}
+│   │   ├── LoginVO.java             # 登录响应 {userId, username, realName, deptId, roles}
 │   │   └── TreeNode.java            # 泛型树节点 {node, children}
 │   ├── util/
 │   │   └── TreeUtils.java           # 泛型 buildTree() 方法
 │   └── exception/
 │       └── GlobalExceptionHandler.java  # @RestControllerAdvice
-└── modules/                         # 16个业务模块
-    ├── system/          → /api/sys/*            (8实体)
+└── modules/                         # 13个业务模块
+    ├── system/          → /api/sys/*, /api/login, /api/logout  (10实体)
     ├── masterdata/      → /api/masterdata/*     (3实体)
     ├── process/         → /api/process/*        (2实体)
     ├── warehouse/       → /api/warehouse/*      (5实体)
     ├── equipment/       → /api/equipment/*      (12实体)
-    ├── plan/            → /api/plan/*           (4实体)
     ├── production/      → /api/production/*     (5实体)
     ├── material/        → /api/*               (5实体)
     ├── quality/         → /api/quality/*        (9实体)
@@ -54,9 +61,7 @@ src/main/java/com/example/mes/
     ├── barcode/         → /api/barcode/*        (5实体)
     ├── wages/           → /api/wages/*          (1实体)
     ├── trace/           → /api/trace/*          (3实体)
-    ├── erp/             → /api/erp/*            (1实体)
-    ├── dashboard/       → /api/dashboard/*      (0实体: 跨模块聚合)
-    └── report/          → /api/report/*         (0实体: 跨模块报表)
+    └── dashboard/       → /api/dashboard/*      (0实体: 跨模块聚合)
 ```
 
 每个模块内部结构：
@@ -179,7 +184,7 @@ public class XxxController {
 - **报表数据**：不缓存（日期范围参数每次不同）
 - 缓存 Key 前缀：`mes:cache:`
 - Session Key 前缀：`mes:session:`
-- 缓存名称定义在 `CacheNames.java`（42 个常量）
+- 缓存名称定义在 `CacheNames.java`（34 个常量）
 
 ## 软删除策略
 
@@ -203,8 +208,8 @@ public class XxxController {
 - 所有 `DELETE` 操作都是软删除（`SET is_deleted = 1`），日志类和中间表除外
 - MyBatis 开启了下划线转驼峰映射（`mapUnderscoreToCamelCase=true`）
 - 不允许通过 update 接口修改 `code` 类字段（如 `username`、`password`、`roleCode`、`productCode`、`materialCode` 等）
-- `@MapperScan` 需注册所有 16 个模块的 mapper 包
-- `mybatis-config.xml` 需注册所有 16 个模块的 entity 包作为 typeAliases
+- `@MapperScan` 需注册所有 13 个模块的 mapper 包
+- `mybatis-config.xml` 需注册所有 13 个模块的 entity 包作为 typeAliases
 - 新增模块时需同步更新 3 个文件：`CacheNames.java`, `mybatis-config.xml`, `MesApplication.java`
 - `BigDecimal` 字段在 XML resultMap 中必须显式标注 `jdbcType="DECIMAL"`
-- `mvnw.cmd clean compile` 编译 290 源文件约 5 秒，作为快速验证手段
+- `mvnw.cmd clean compile` 编译 282 源文件约 5 秒，作为快速验证手段

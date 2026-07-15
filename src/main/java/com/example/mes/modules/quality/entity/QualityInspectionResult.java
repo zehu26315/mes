@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -23,4 +24,6 @@ public class QualityInspectionResult {
     private BigDecimal actualValue;
     private String unit;
     private Integer isPass;
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

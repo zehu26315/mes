@@ -25,4 +25,5 @@ public class QualityDefectRecord {
     private String correctiveAction;
     private String reporter;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

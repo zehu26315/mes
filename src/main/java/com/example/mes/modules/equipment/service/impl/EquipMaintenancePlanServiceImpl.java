@@ -20,6 +20,12 @@ public class EquipMaintenancePlanServiceImpl implements EquipMaintenancePlanServ
     @Override @Transactional
     public EquipMaintenancePlan create(EquipMaintenancePlan e) { planMapper.insert(e); return e; }
 
+    @Override @Transactional
+    public EquipMaintenancePlan update(EquipMaintenancePlan e) { planMapper.update(e); return planMapper.selectById(e.getId()); }
+
+    @Override @Transactional
+    public void delete(Long id) { planMapper.deleteById(id); }
+
     @Override public EquipMaintenancePlan getById(Long id) { return planMapper.selectById(id); }
 
     @Override

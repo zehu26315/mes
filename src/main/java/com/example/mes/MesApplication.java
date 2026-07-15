@@ -10,7 +10,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
     "com.example.mes.modules.masterdata.mapper",
     "com.example.mes.modules.process.mapper",
     "com.example.mes.modules.production.mapper",
-    "com.example.mes.modules.plan.mapper",
     "com.example.mes.modules.material.mapper",
     "com.example.mes.modules.warehouse.mapper",
     "com.example.mes.modules.equipment.mapper",
@@ -18,8 +17,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
     "com.example.mes.modules.andon.mapper",
     "com.example.mes.modules.barcode.mapper",
     "com.example.mes.modules.trace.mapper",
-    "com.example.mes.modules.wages.mapper",
-    "com.example.mes.modules.erp.mapper"
+    "com.example.mes.modules.wages.mapper"
 })
 public class MesApplication {
 

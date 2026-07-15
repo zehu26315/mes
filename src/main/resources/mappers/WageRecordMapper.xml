@@ -31,6 +31,21 @@
                 #{quantity}, #{unitPrice}, #{totalAmount}, #{recordDate})
     </insert>
 
+    <update id="update">
+        UPDATE wages_record
+        <set>
+            <if test="employeeName != null">employee_name = #{employeeName},</if>
+            <if test="employeeCode != null">employee_code = #{employeeCode},</if>
+            <if test="workOrderId != null">work_order_id = #{workOrderId},</if>
+            <if test="processCode != null">process_code = #{processCode},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="unitPrice != null">unit_price = #{unitPrice},</if>
+            <if test="totalAmount != null">total_amount = #{totalAmount},</if>
+            <if test="recordDate != null">record_date = #{recordDate},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
     <update id="deleteById">
         UPDATE wages_record SET is_deleted = 1 WHERE id = #{id}
     </update>

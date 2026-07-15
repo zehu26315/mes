@@ -92,8 +92,14 @@
                  OR product_code LIKE CONCAT('%', #{keyword}, '%')
                  OR product_name LIKE CONCAT('%', #{keyword}, '%'))
         </if>
-        <if test="status != null">
+        <if test="status != null and status != ''">
             AND status = #{status}
+        </if>
+        <if test="startDate != null and startDate != ''">
+            AND start_date >= #{startDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            AND start_date &lt;= #{endDate}
         </if>
         ORDER BY id DESC
         LIMIT #{offset}, #{limit}
@@ -108,8 +114,14 @@
                  OR product_code LIKE CONCAT('%', #{keyword}, '%')
                  OR product_name LIKE CONCAT('%', #{keyword}, '%'))
         </if>
-        <if test="status != null">
+        <if test="status != null and status != ''">
             AND status = #{status}
+        </if>
+        <if test="startDate != null and startDate != ''">
+            AND start_date >= #{startDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            AND start_date &lt;= #{endDate}
         </if>
     </select>
 

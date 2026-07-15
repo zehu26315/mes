@@ -24,4 +24,5 @@ public class SysOperationLog {
     private String errorMsg;
     private Long duration;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

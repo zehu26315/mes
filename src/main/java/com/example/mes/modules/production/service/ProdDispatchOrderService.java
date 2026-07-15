@@ -13,5 +13,5 @@ public interface ProdDispatchOrderService {
 
     ProdDispatchOrder getById(Long id);
 
-    PageResult<ProdDispatchOrder> list(Long workOrderId, Integer status, int page, int pageSize);
+    PageResult<ProdDispatchOrder> list(Long workOrderId, String status, int page, int pageSize);
 }

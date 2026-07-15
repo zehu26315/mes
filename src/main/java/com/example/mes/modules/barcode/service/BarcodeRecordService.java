@@ -9,7 +9,7 @@ public interface BarcodeRecordService {
 
     BarcodeRecord getById(Long id);
 
-    PageResult<BarcodeRecord> list(String keyword, Integer status, int page, int pageSize);
+    PageResult<BarcodeRecord> list(String keyword, String status, int page, int pageSize);
 
     void deleteById(Long id);
 }

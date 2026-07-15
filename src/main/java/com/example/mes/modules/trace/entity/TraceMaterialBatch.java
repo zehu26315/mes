@@ -27,4 +27,5 @@ public class TraceMaterialBatch {
     private String inspectionResult;
     private String certificateNo;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

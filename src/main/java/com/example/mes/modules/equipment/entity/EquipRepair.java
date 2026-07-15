@@ -19,7 +19,7 @@ public class EquipRepair {
     private String repairPerson;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private Long downtime;
+    private Integer downtime;
     private String repairContent;
     private String partsUsed;
     private BigDecimal cost;

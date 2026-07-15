@@ -28,5 +28,6 @@ public class MatInventory {
     private String supplier;
     private LocalDate productionDate;
     private LocalDate expiryDate;
+    private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

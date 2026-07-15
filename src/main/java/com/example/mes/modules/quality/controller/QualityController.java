@@ -2,6 +2,8 @@ package com.example.mes.modules.quality.controller;
 
 import com.example.mes.common.response.PageResult;
 import com.example.mes.common.response.Result;
+import com.example.mes.modules.production.entity.ProdWorkOrder;
+import com.example.mes.modules.production.service.ProdWorkOrderService;
 import com.example.mes.modules.quality.entity.*;
 import com.example.mes.modules.quality.service.*;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class QualityController {
     private final QualityFirstLastService firstLastService;
     private final QualityPatrolService patrolService;
     private final QualityDefectRecordService defectService;
+    private final ProdWorkOrderService prodWorkOrderService;
 
     // ==================== Categories ====================
 
@@ -192,10 +195,11 @@ public class QualityController {
     @GetMapping("/first-last")
     public Result<PageResult<QualityFirstLast>> listFirstLast(
             @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(required = false) Long workOrderId,
+            @RequestParam(required = false) String workOrderCode,
             @RequestParam(required = false) String result,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize) {
+        Long workOrderId = resolveWorkOrderId(workOrderCode);
         return Result.ok(firstLastService.listRecords(keyword, workOrderId, result, page, pageSize));
     }
 
@@ -226,10 +230,11 @@ public class QualityController {
     @GetMapping("/patrols")
     public Result<PageResult<QualityPatrol>> listPatrols(
             @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(required = false) Long workOrderId,
+            @RequestParam(required = false) String workOrderCode,
             @RequestParam(required = false) String result,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize) {
+        Long workOrderId = resolveWorkOrderId(workOrderCode);
         return Result.ok(patrolService.listPatrols(keyword, workOrderId, result, page, pageSize));
     }
 
@@ -260,10 +265,11 @@ public class QualityController {
     @GetMapping("/defects")
     public Result<PageResult<QualityDefectRecord>> listDefects(
             @RequestParam(defaultValue = "") String keyword,
-            @RequestParam(required = false) Long workOrderId,
+            @RequestParam(required = false) String workOrderCode,
             @RequestParam(required = false) String defectType,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize) {
+        Long workOrderId = resolveWorkOrderId(workOrderCode);
         return Result.ok(defectService.listRecords(keyword, workOrderId, defectType, page, pageSize));
     }
 
@@ -287,5 +293,16 @@ public class QualityController {
     public Result<Void> deleteDefect(@PathVariable Long id) {
         defectService.deleteRecord(id);
         return Result.ok();
+    }
+
+    // ---- helper ----
+
+    /** 将工单编号(orderNo)转换为数据库ID，用于关联表查询 */
+    private Long resolveWorkOrderId(String workOrderCode) {
+        if (workOrderCode == null || workOrderCode.isBlank()) {
+            return null;
+        }
+        ProdWorkOrder wo = prodWorkOrderService.getByOrderNo(workOrderCode.trim());
+        return wo != null ? wo.getId() : null;
     }
 }

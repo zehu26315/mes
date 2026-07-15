@@ -14,17 +14,21 @@ public interface ProdWorkOrderMapper {
     ProdWorkOrder selectById(@Param("id") Long id);
 
     List<ProdWorkOrder> selectList(@Param("keyword") String keyword,
-                                   @Param("status") Integer status,
+                                   @Param("status") String status,
+                                   @Param("startDate") String startDate,
+                                   @Param("endDate") String endDate,
                                    @Param("offset") int offset,
                                    @Param("limit") int limit);
 
     long countList(@Param("keyword") String keyword,
-                   @Param("status") Integer status);
+                   @Param("status") String status,
+                   @Param("startDate") String startDate,
+                   @Param("endDate") String endDate);
 
     int deleteById(@Param("id") Long id);
 
     ProdWorkOrder selectByOrderNo(@Param("orderNo") String orderNo);
 
     int updateStatus(@Param("id") Long id,
-                     @Param("status") Integer status);
+                     @Param("status") String status);
 }

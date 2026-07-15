@@ -22,4 +22,6 @@ public interface SysUserMapper {
                    @Param("status") Integer status);
 
     int deleteById(@Param("id") Long id);
+
+    SysUser selectByUsername(@Param("username") String username);
 }

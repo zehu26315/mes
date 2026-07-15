@@ -24,4 +24,5 @@ public class EquipOeeRecord {
     private BigDecimal quality;
     private BigDecimal oee;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

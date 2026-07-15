@@ -42,7 +42,7 @@ public class ProdDispatchOrderServiceImpl implements ProdDispatchOrderService {
     }
 
     @Override
-    public PageResult<ProdDispatchOrder> list(Long workOrderId, Integer status, int page, int pageSize) {
+    public PageResult<ProdDispatchOrder> list(Long workOrderId, String status, int page, int pageSize) {
         int offset = (page - 1) * pageSize;
         List<ProdDispatchOrder> rows = prodDispatchOrderMapper.selectList(workOrderId, status, offset, pageSize);
         long total = prodDispatchOrderMapper.countList(workOrderId, status);

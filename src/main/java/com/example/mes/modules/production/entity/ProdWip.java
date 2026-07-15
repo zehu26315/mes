@@ -23,5 +23,6 @@ public class ProdWip {
     private String workCenter;
     private BigDecimal wipQty;
     private BigDecimal holdQty;
+    private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

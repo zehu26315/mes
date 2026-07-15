@@ -18,4 +18,5 @@ public class EquipInspectionRecord {
     private String inspector;
     private String remark;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

@@ -18,4 +18,6 @@ public interface WageRecordMapper {
     long countList(@Param("keyword") String keyword);
 
     int deleteById(@Param("id") Long id);
+
+    int update(WageRecord record);
 }

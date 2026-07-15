@@ -93,6 +93,12 @@ public class EquipmentController {
     @PostMapping("/maintenance-plans")
     public Result<EquipMaintenancePlan> createMaintenancePlan(@RequestBody EquipMaintenancePlan e) { return Result.ok(maintenancePlanService.create(e)); }
 
+    @PutMapping("/maintenance-plans/{id}")
+    public Result<EquipMaintenancePlan> updateMaintenancePlan(@PathVariable Long id, @RequestBody EquipMaintenancePlan e) { e.setId(id); return Result.ok(maintenancePlanService.update(e)); }
+
+    @DeleteMapping("/maintenance-plans/{id}")
+    public Result<Void> deleteMaintenancePlan(@PathVariable Long id) { maintenancePlanService.delete(id); return Result.ok(); }
+
     @GetMapping("/maintenance-records")
     public Result<PageResult<EquipMaintenanceRecord>> listMaintenanceRecords(@RequestParam(required = false) Long equipId,
                                                                               @RequestParam(required = false) String startDate,
@@ -116,6 +122,12 @@ public class EquipmentController {
 
     @PostMapping("/repairs")
     public Result<EquipRepair> createRepair(@RequestBody EquipRepair e) { return Result.ok(repairService.create(e)); }
+
+    @PutMapping("/repairs/{id}")
+    public Result<EquipRepair> updateRepair(@PathVariable Long id, @RequestBody EquipRepair e) { e.setId(id); return Result.ok(repairService.update(e)); }
+
+    @DeleteMapping("/repairs/{id}")
+    public Result<Void> deleteRepair(@PathVariable Long id) { repairService.delete(id); return Result.ok(); }
 
     @PutMapping("/repairs/{id}/complete")
     public Result<EquipRepair> completeRepair(@PathVariable Long id) { return Result.ok(repairService.complete(id)); }

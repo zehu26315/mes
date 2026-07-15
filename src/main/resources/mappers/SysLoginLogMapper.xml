@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.system.mapper.SysLoginLogMapper">
+
+    <resultMap id="BaseResultMap" type="SysLoginLog">
+        <id property="id" column="id"/>
+        <result property="loginName" column="login_name"/>
+        <result property="ipAddress" column="ip_address"/>
+        <result property="loginLocation" column="login_location"/>
+        <result property="browserType" column="browser_type"/>
+        <result property="os" column="os"/>
+        <result property="status" column="status"/>
+        <result property="msg" column="msg"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, login_name, ip_address, login_location, browser_type, os,
+        status, msg, is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_login_log (login_name, ip_address, login_location, browser_type, os, status, msg)
+        VALUES (#{loginName}, #{ipAddress}, #{loginLocation}, #{browserType}, #{os}, #{status}, #{msg})
+    </insert>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM sys_login_log
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM sys_login_log
+        WHERE is_deleted = 0
+        <if test="loginName != null and loginName != ''">
+            AND login_name LIKE CONCAT('%', #{loginName}, '%')
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM sys_login_log
+        WHERE is_deleted = 0
+        <if test="loginName != null and loginName != ''">
+            AND login_name LIKE CONCAT('%', #{loginName}, '%')
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+    <update id="deleteById">
+        UPDATE sys_login_log SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+</mapper>

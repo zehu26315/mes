@@ -31,6 +31,12 @@ public class WageRecordController {
         return Result.ok(wageRecordService.getRecordById(id));
     }
 
+    @PutMapping("/records/{id}")
+    public Result<WageRecord> update(@PathVariable Long id, @RequestBody WageRecord record) {
+        record.setId(id);
+        return Result.ok(wageRecordService.updateRecord(record));
+    }
+
     @DeleteMapping("/records/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         wageRecordService.deleteRecord(id);

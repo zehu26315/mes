@@ -15,7 +15,8 @@ public interface ProdWorkOrderService {
 
     ProdWorkOrder getByOrderNo(String orderNo);
 
-    PageResult<ProdWorkOrder> list(String keyword, Integer status, int page, int pageSize);
+    PageResult<ProdWorkOrder> list(String keyword, String status, String startDate,
+                                    String endDate, int page, int pageSize);
 
-    void updateStatus(Long id, Integer status);
+    void updateStatus(Long id, String status);
 }

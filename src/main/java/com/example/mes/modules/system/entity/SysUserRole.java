@@ -16,7 +16,6 @@ public class SysUserRole {
     private Long id;
     private Long userId;
     private Long roleId;
-    private Integer isDeleted;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

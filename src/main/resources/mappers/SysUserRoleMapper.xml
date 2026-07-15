@@ -7,9 +7,6 @@
         <id property="id" column="id"/>
         <result property="userId" column="user_id"/>
         <result property="roleId" column="role_id"/>
-        <result property="isDeleted" column="is_deleted"/>
-        <result property="createTime" column="create_time"/>
-        <result property="updateTime" column="update_time"/>
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
@@ -25,14 +22,14 @@
         </foreach>
     </insert>
 
-    <update id="deleteByUserId">
-        UPDATE sys_user_role SET is_deleted = 1 WHERE user_id = #{userId}
-    </update>
+    <delete id="deleteByUserId">
+        DELETE FROM sys_user_role WHERE user_id = #{userId}
+    </delete>
 
     <select id="selectByUserId" resultMap="BaseResultMap">
-        SELECT id, user_id, role_id, is_deleted, create_time, update_time
+        SELECT id, user_id, role_id
         FROM sys_user_role
-        WHERE user_id = #{userId} AND is_deleted = 0
+        WHERE user_id = #{userId}
     </select>
 
 </mapper>

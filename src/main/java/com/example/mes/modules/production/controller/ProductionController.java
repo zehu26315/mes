@@ -5,9 +5,11 @@ import com.example.mes.common.response.Result;
 import com.example.mes.modules.production.entity.ProdReporting;
 import com.example.mes.modules.production.entity.ProdRepairOrder;
 import com.example.mes.modules.production.entity.ProdWip;
+import com.example.mes.modules.production.entity.ProdWorkOrder;
 import com.example.mes.modules.production.service.ProdReportingService;
 import com.example.mes.modules.production.service.ProdRepairOrderService;
 import com.example.mes.modules.production.service.ProdWipService;
+import com.example.mes.modules.production.service.ProdWorkOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,15 +23,26 @@ public class ProductionController {
     private final ProdReportingService prodReportingService;
     private final ProdWipService prodWipService;
     private final ProdRepairOrderService prodRepairOrderService;
+    private final ProdWorkOrderService prodWorkOrderService;
 
     // ---- Reportings ----
 
     @GetMapping("/reportings")
-    public Result<PageResult<ProdReporting>> listReportings(@RequestParam(required = false) Long workOrderId,
+    public Result<PageResult<ProdReporting>> listReportings(@RequestParam(required = false) String workOrderCode,
                                                              @RequestParam(required = false) String processCode,
                                                              @RequestParam(defaultValue = "1") int page,
                                                              @RequestParam(defaultValue = "10") int pageSize) {
+        Long workOrderId = resolveWorkOrderId(workOrderCode);
         return Result.ok(prodReportingService.list(workOrderId, processCode, page, pageSize));
+    }
+
+    /** 将工单编号(orderNo)转换为数据库ID，用于关联表查询 */
+    private Long resolveWorkOrderId(String workOrderCode) {
+        if (workOrderCode == null || workOrderCode.isBlank()) {
+            return null;
+        }
+        ProdWorkOrder wo = prodWorkOrderService.getByOrderNo(workOrderCode.trim());
+        return wo != null ? wo.getId() : null;
     }
 
     @PostMapping("/reportings")

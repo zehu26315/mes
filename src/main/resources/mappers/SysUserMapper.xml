@@ -65,6 +65,13 @@
         LIMIT #{offset}, #{limit}
     </select>
 
+    <select id="selectByUsername" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM sys_user
+        WHERE username = #{username} AND is_deleted = 0
+        LIMIT 1
+    </select>
+
     <select id="countList" resultType="long">
         SELECT COUNT(*)
         FROM sys_user

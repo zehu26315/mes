@@ -19,6 +19,12 @@ public class EquipRepairServiceImpl implements EquipRepairService {
     @Override @Transactional
     public EquipRepair create(EquipRepair e) { e.setStatus("REPORTED"); mapper.insert(e); return e; }
 
+    @Override @Transactional
+    public EquipRepair update(EquipRepair e) { mapper.update(e); return mapper.selectById(e.getId()); }
+
+    @Override @Transactional
+    public void delete(Long id) { mapper.deleteById(id); }
+
     @Override public EquipRepair getById(Long id) { return mapper.selectById(id); }
 
     @Override

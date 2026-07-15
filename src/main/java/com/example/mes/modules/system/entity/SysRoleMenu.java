@@ -17,4 +17,5 @@ public class SysRoleMenu {
     private Long roleId;
     private Long menuId;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

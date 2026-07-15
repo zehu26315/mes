@@ -176,7 +176,7 @@ public class BarcodeController {
 
     @GetMapping("/records")
     public Result<PageResult<BarcodeRecord>> listRecords(@RequestParam(defaultValue = "") String keyword,
-                                                          @RequestParam(required = false) Integer status,
+                                                          @RequestParam(required = false) String status,
                                                           @RequestParam(defaultValue = "1") int page,
                                                           @RequestParam(defaultValue = "10") int pageSize) {
         return Result.ok(barcodeRecordService.list(keyword, status, page, pageSize));

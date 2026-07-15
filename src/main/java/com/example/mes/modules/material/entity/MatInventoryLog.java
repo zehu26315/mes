@@ -24,4 +24,5 @@ public class MatInventoryLog {
     private String referenceNo;
     private String operator;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

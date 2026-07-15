@@ -12,4 +12,6 @@ public interface WageRecordService {
     PageResult<WageRecord> listRecords(String keyword, int page, int pageSize);
 
     void deleteRecord(Long id);
+
+    WageRecord updateRecord(WageRecord record);
 }

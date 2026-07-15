@@ -14,12 +14,12 @@ public interface ProdDispatchOrderMapper {
     ProdDispatchOrder selectById(@Param("id") Long id);
 
     List<ProdDispatchOrder> selectList(@Param("workOrderId") Long workOrderId,
-                                       @Param("status") Integer status,
+                                       @Param("status") String status,
                                        @Param("offset") int offset,
                                        @Param("limit") int limit);
 
     long countList(@Param("workOrderId") Long workOrderId,
-                   @Param("status") Integer status);
+                   @Param("status") String status);
 
     int deleteById(@Param("id") Long id);
 }

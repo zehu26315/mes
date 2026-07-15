@@ -39,7 +39,7 @@ public class BarcodeRecordServiceImpl implements BarcodeRecordService {
     }
 
     @Override
-    public PageResult<BarcodeRecord> list(String keyword, Integer status, int page, int pageSize) {
+    public PageResult<BarcodeRecord> list(String keyword, String status, int page, int pageSize) {
         int offset = (page - 1) * pageSize;
         List<BarcodeRecord> rows = barcodeRecordMapper.selectList(keyword, status, offset, pageSize);
         long total = barcodeRecordMapper.countList(keyword, status);

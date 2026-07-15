@@ -15,4 +15,5 @@ public class EquipStatusLog {
     private String reason;
     private String operator;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -19,4 +20,6 @@ public class QualityStandardDetail {
     private BigDecimal standardValue;
     private BigDecimal upperLimit;
     private BigDecimal lowerLimit;
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

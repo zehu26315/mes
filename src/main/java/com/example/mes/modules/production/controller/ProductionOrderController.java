@@ -21,10 +21,12 @@ public class ProductionOrderController {
 
     @GetMapping("/work-orders")
     public Result<PageResult<ProdWorkOrder>> listWorkOrders(@RequestParam(defaultValue = "") String keyword,
-                                                             @RequestParam(required = false) Integer status,
+                                                             @RequestParam(required = false) String status,
+                                                             @RequestParam(required = false) String startDate,
+                                                             @RequestParam(required = false) String endDate,
                                                              @RequestParam(defaultValue = "1") int page,
                                                              @RequestParam(defaultValue = "10") int pageSize) {
-        return Result.ok(prodWorkOrderService.list(keyword, status, page, pageSize));
+        return Result.ok(prodWorkOrderService.list(keyword, status, startDate, endDate, page, pageSize));
     }
 
     @PostMapping("/work-orders")
@@ -50,7 +52,7 @@ public class ProductionOrderController {
     }
 
     @PutMapping("/work-orders/{id}/status")
-    public Result<Void> updateWorkOrderStatus(@PathVariable Long id, @RequestParam Integer status) {
+    public Result<Void> updateWorkOrderStatus(@PathVariable Long id, @RequestParam String status) {
         prodWorkOrderService.updateStatus(id, status);
         return Result.ok();
     }
@@ -58,11 +60,21 @@ public class ProductionOrderController {
     // ---- Dispatch Orders ----
 
     @GetMapping("/dispatch-orders")
-    public Result<PageResult<ProdDispatchOrder>> listDispatchOrders(@RequestParam(required = false) Long workOrderId,
-                                                                     @RequestParam(required = false) Integer status,
+    public Result<PageResult<ProdDispatchOrder>> listDispatchOrders(@RequestParam(required = false) String workOrderCode,
+                                                                     @RequestParam(required = false) String status,
                                                                      @RequestParam(defaultValue = "1") int page,
                                                                      @RequestParam(defaultValue = "10") int pageSize) {
+        Long workOrderId = resolveWorkOrderId(workOrderCode);
         return Result.ok(prodDispatchOrderService.list(workOrderId, status, page, pageSize));
+    }
+
+    /** 将工单编号(orderNo)转换为数据库ID，用于关联表查询 */
+    private Long resolveWorkOrderId(String workOrderCode) {
+        if (workOrderCode == null || workOrderCode.isBlank()) {
+            return null;
+        }
+        ProdWorkOrder wo = prodWorkOrderService.getByOrderNo(workOrderCode.trim());
+        return wo != null ? wo.getId() : null;
     }
 
     @PostMapping("/dispatch-orders")

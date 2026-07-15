@@ -7,7 +7,6 @@
         <id property="id" column="id"/>
         <result property="roleId" column="role_id"/>
         <result property="menuId" column="menu_id"/>
-        <result property="createTime" column="create_time"/>
     </resultMap>
 
     <delete id="deleteByRoleId">
@@ -23,7 +22,7 @@
     </insert>
 
     <select id="selectByRoleId" resultMap="BaseResultMap">
-        SELECT id, role_id, menu_id, create_time
+        SELECT id, role_id, menu_id
         FROM sys_role_menu
         WHERE role_id = #{roleId}
     </select>

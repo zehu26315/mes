@@ -29,6 +29,13 @@ public interface CacheNames {
     String SYS_CONFIG = "sys_config";
     String SYS_CONFIG_ALL = "sys_config_all";
 
+    // ========== System: Notice ==========
+    String SYS_NOTICE = "sys_notice";
+    String SYS_NOTICE_LIST = "sys_notice_list";
+
+    // ========== System: Login Log ==========
+    String SYS_LOGIN_LOG = "sys_login_log";
+
     // ========== Master Data: Product ==========
     String MD_PRODUCT = "md_product";
     String MD_PRODUCT_LIST = "md_product_list";
@@ -63,16 +70,6 @@ public interface CacheNames {
     // ========== Wages ==========
     String WAGES_RECORD = "wages_record";
     String WAGES_RECORD_LIST = "wages_record_list";
-
-    // ========== Plan ==========
-    String PLAN_MPS = "plan_mps";
-    String PLAN_MPS_LIST = "plan_mps_list";
-    String PLAN_DAILY = "plan_daily";
-    String PLAN_DAILY_LIST = "plan_daily_list";
-    String PLAN_SCHEDULE = "plan_schedule";
-    String PLAN_SCHEDULE_LIST = "plan_schedule_list";
-    String PLAN_ORDER_SPLIT = "plan_order_split";
-    String PLAN_ORDER_SPLIT_LIST = "plan_order_split_list";
 
     // ========== Dashboard ==========
     String DASHBOARD = "dashboard";

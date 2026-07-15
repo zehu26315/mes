@@ -7,7 +7,7 @@
 - **迁移日期**：2026-07-13
 - **源文件**：`src1/`（375 文件，不在 Git 版本控制中）
 - **目标文件**：`src/main/java/com/example/mes/` + `src/main/resources/mappers/`
-- **最终规模**：290 源文件 + 69 XML Mapper = 359 文件
+- **最终规模**：294 源文件 + 69 XML Mapper = 363 文件
 
 ## 架构对比
 
@@ -145,6 +145,10 @@ public class XxxController {
 | `common/util/TreeUtils.java` | 泛型 `buildTree()` 方法 |
 | `common/exception/GlobalExceptionHandler.java` | `@RestControllerAdvice` 全局异常处理 |
 | `config/CacheNames.java` | 统一缓存名称常量 (42个) |
+| `config/LoginInterceptor.java` | 登录拦截器 — Session 白名单验证，未登录返回 401 |
+| `config/WebConfig.java` | 拦截器注册 — 拦截所有 `/api/**`，放行 `/api/login`、`/api/logout` |
+| `common/response/LoginVO.java` | 登录响应 VO — userId, username, realName, deptId, roles |
+| `modules/system/controller/AuthController.java` | 认证控制器 — `POST /api/login`、`POST /api/logout` |
 
 ## URL 规范
 
@@ -194,6 +198,8 @@ public class XxxController {
 | 安灯生命周期 | AndonController | AndonRecordServiceImpl.updateStatus |
 | 看板数据聚合 | DashboardServiceImpl | DashboardServiceImpl (同名迁移) |
 | 报表数据聚合 | ReportServiceImpl | ReportServiceImpl (同名迁移) |
+| 用户登录 | — | **新增** — Session (Redis) 认证，BCrypt 密码验证，角色查询 |
+| 全局认证拦截 | — | **新增** — LoginInterceptor + WebConfig，白名单放行 |
 
 ## 未迁移内容
 

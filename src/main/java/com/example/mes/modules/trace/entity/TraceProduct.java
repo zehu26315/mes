@@ -29,4 +29,5 @@ public class TraceProduct {
     private LocalDateTime productionTime;
     private String inspectionResult;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

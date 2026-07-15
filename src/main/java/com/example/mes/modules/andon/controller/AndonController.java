@@ -12,8 +12,13 @@ import com.example.mes.modules.andon.service.AndonReasonService;
 import com.example.mes.modules.andon.service.AndonRecordService;
 import com.example.mes.modules.andon.service.AndonTypeService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,27 +27,35 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AndonController {
 
+    private static final Logger log = LoggerFactory.getLogger(AndonController.class);
+
     private final AndonTypeService andonTypeService;
     private final AndonConfigService andonConfigService;
     private final AndonReasonService andonReasonService;
     private final AndonRecordService andonRecordService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     // ==================== AndonType ====================
 
     @PostMapping("/types")
     public Result<AndonType> createType(@RequestBody AndonType andonType) {
-        return Result.ok(andonTypeService.create(andonType));
+        AndonType result = andonTypeService.create(andonType);
+        broadcastChange("type", "create", result.getId());
+        return Result.ok(result);
     }
 
     @PutMapping("/types/{id}")
     public Result<AndonType> updateType(@PathVariable Long id, @RequestBody AndonType andonType) {
         andonType.setId(id);
-        return Result.ok(andonTypeService.update(andonType));
+        AndonType result = andonTypeService.update(andonType);
+        broadcastChange("type", "update", id);
+        return Result.ok(result);
     }
 
     @DeleteMapping("/types/{id}")
     public Result<Void> deleteType(@PathVariable Long id) {
         andonTypeService.delete(id);
+        broadcastChange("type", "delete", id);
         return Result.ok();
     }
 
@@ -62,18 +75,23 @@ public class AndonController {
 
     @PostMapping("/configs")
     public Result<AndonConfig> createConfig(@RequestBody AndonConfig andonConfig) {
-        return Result.ok(andonConfigService.create(andonConfig));
+        AndonConfig result = andonConfigService.create(andonConfig);
+        broadcastChange("config", "create", result.getId());
+        return Result.ok(result);
     }
 
     @PutMapping("/configs/{id}")
     public Result<AndonConfig> updateConfig(@PathVariable Long id, @RequestBody AndonConfig andonConfig) {
         andonConfig.setId(id);
-        return Result.ok(andonConfigService.update(andonConfig));
+        AndonConfig result = andonConfigService.update(andonConfig);
+        broadcastChange("config", "update", id);
+        return Result.ok(result);
     }
 
     @DeleteMapping("/configs/{id}")
     public Result<Void> deleteConfig(@PathVariable Long id) {
         andonConfigService.delete(id);
+        broadcastChange("config", "delete", id);
         return Result.ok();
     }
 
@@ -95,18 +113,23 @@ public class AndonController {
 
     @PostMapping("/reasons")
     public Result<AndonReason> createReason(@RequestBody AndonReason andonReason) {
-        return Result.ok(andonReasonService.create(andonReason));
+        AndonReason result = andonReasonService.create(andonReason);
+        broadcastChange("reason", "create", result.getId());
+        return Result.ok(result);
     }
 
     @PutMapping("/reasons/{id}")
     public Result<AndonReason> updateReason(@PathVariable Long id, @RequestBody AndonReason andonReason) {
         andonReason.setId(id);
-        return Result.ok(andonReasonService.update(andonReason));
+        AndonReason result = andonReasonService.update(andonReason);
+        broadcastChange("reason", "update", id);
+        return Result.ok(result);
     }
 
     @DeleteMapping("/reasons/{id}")
     public Result<Void> deleteReason(@PathVariable Long id) {
         andonReasonService.delete(id);
+        broadcastChange("reason", "delete", id);
         return Result.ok();
     }
 
@@ -133,7 +156,9 @@ public class AndonController {
 
     @PostMapping("/records")
     public Result<AndonRecord> createRecord(@RequestBody AndonRecord andonRecord) {
-        return Result.ok(andonRecordService.create(andonRecord));
+        AndonRecord result = andonRecordService.create(andonRecord);
+        broadcastChange("record", "create", result.getId());
+        return Result.ok(result);
     }
 
     @GetMapping("/records/{id}")
@@ -160,7 +185,9 @@ public class AndonController {
         String status = body.get("status");
         String handler = body.get("handler");
         String resolveDesc = body.get("resolveDesc");
-        return Result.ok(andonRecordService.updateStatus(id, status, handler, resolveDesc));
+        AndonRecord result = andonRecordService.updateStatus(id, status, handler, resolveDesc);
+        broadcastChange("record", "update", id);
+        return Result.ok(result);
     }
 
     @GetMapping("/records/active")
@@ -171,6 +198,22 @@ public class AndonController {
     @DeleteMapping("/records/{id}")
     public Result<Void> deleteRecord(@PathVariable Long id) {
         andonRecordService.delete(id);
+        broadcastChange("record", "delete", id);
         return Result.ok();
+    }
+
+    // ==================== WebSocket broadcast ====================
+
+    private void broadcastChange(String type, String action, Long id) {
+        try {
+            Map<String, Object> msg = new HashMap<>();
+            msg.put("type", type);
+            msg.put("action", action);
+            msg.put("id", id);
+            msg.put("time", LocalDateTime.now().toString());
+            messagingTemplate.convertAndSend("/topic/andon", (Object) msg);
+        } catch (Exception e) {
+            log.warn("Failed to broadcast andon change: {}", e.getMessage());
+        }
     }
 }

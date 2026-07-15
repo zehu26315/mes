@@ -6,6 +6,8 @@ import com.example.mes.modules.equipment.entity.EquipMaintenanceRecord;
 
 public interface EquipMaintenancePlanService {
     EquipMaintenancePlan create(EquipMaintenancePlan e);
+    EquipMaintenancePlan update(EquipMaintenancePlan e);
+    void delete(Long id);
     EquipMaintenancePlan getById(Long id);
     PageResult<EquipMaintenancePlan> list(Long equipId, String status, String startDate, String endDate, int page, int pageSize);
     EquipMaintenanceRecord createRecord(EquipMaintenanceRecord record);

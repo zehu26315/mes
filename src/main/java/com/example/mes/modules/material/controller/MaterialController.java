@@ -12,6 +12,8 @@ import com.example.mes.modules.material.service.MatInventoryService;
 import com.example.mes.modules.material.service.MatRequisitionService;
 import com.example.mes.modules.material.service.MatReturnService;
 import com.example.mes.modules.material.service.MatSupplementService;
+import com.example.mes.modules.production.entity.ProdWorkOrder;
+import com.example.mes.modules.production.service.ProdWorkOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +26,7 @@ public class MaterialController {
     private final MatSupplementService matSupplementService;
     private final MatInventoryService matInventoryService;
     private final MatInventoryLogService matInventoryLogService;
+    private final ProdWorkOrderService prodWorkOrderService;
 
     // ==================== Requisitions ====================
 
@@ -34,10 +37,11 @@ public class MaterialController {
 
     @GetMapping("/api/requisitions")
     public Result<PageResult<MatRequisition>> listRequisitions(@RequestParam(required = false) String status,
-                                                                @RequestParam(required = false) Long workOrderId,
+                                                                @RequestParam(required = false) String workOrderCode,
                                                                 @RequestParam(required = false) String materialCode,
                                                                 @RequestParam(defaultValue = "1") int page,
                                                                 @RequestParam(defaultValue = "10") int pageSize) {
+        Long workOrderId = resolveWorkOrderId(workOrderCode);
         return Result.ok(matRequisitionService.list(status, workOrderId, materialCode, page, pageSize));
     }
 
@@ -61,10 +65,11 @@ public class MaterialController {
 
     @GetMapping("/api/returns")
     public Result<PageResult<MatReturn>> listReturns(@RequestParam(required = false) String status,
-                                                      @RequestParam(required = false) Long workOrderId,
+                                                      @RequestParam(required = false) String workOrderCode,
                                                       @RequestParam(required = false) String materialCode,
                                                       @RequestParam(defaultValue = "1") int page,
                                                       @RequestParam(defaultValue = "10") int pageSize) {
+        Long workOrderId = resolveWorkOrderId(workOrderCode);
         return Result.ok(matReturnService.list(status, workOrderId, materialCode, page, pageSize));
     }
 
@@ -82,10 +87,11 @@ public class MaterialController {
 
     @GetMapping("/api/supplements")
     public Result<PageResult<MatSupplement>> listSupplements(@RequestParam(required = false) String status,
-                                                              @RequestParam(required = false) Long workOrderId,
+                                                              @RequestParam(required = false) String workOrderCode,
                                                               @RequestParam(required = false) String materialCode,
                                                               @RequestParam(defaultValue = "1") int page,
                                                               @RequestParam(defaultValue = "10") int pageSize) {
+        Long workOrderId = resolveWorkOrderId(workOrderCode);
         return Result.ok(matSupplementService.list(status, workOrderId, materialCode, page, pageSize));
     }
 
@@ -126,5 +132,16 @@ public class MaterialController {
                                                                   @RequestParam(defaultValue = "1") int page,
                                                                   @RequestParam(defaultValue = "10") int pageSize) {
         return Result.ok(matInventoryLogService.list(materialId, materialCode, changeType, page, pageSize));
+    }
+
+    // ---- helper ----
+
+    /** 将工单编号(orderNo)转换为数据库ID，用于关联表查询 */
+    private Long resolveWorkOrderId(String workOrderCode) {
+        if (workOrderCode == null || workOrderCode.isBlank()) {
+            return null;
+        }
+        ProdWorkOrder wo = prodWorkOrderService.getByOrderNo(workOrderCode.trim());
+        return wo != null ? wo.getId() : null;
     }
 }

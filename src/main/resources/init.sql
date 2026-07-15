@@ -140,6 +140,40 @@ CREATE TABLE IF NOT EXISTS sys_operation_log (
     INDEX idx_create_time (create_time)
 ) COMMENT 'Operation Log' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Notice/Announcement
+CREATE TABLE IF NOT EXISTS sys_notice (
+    id BIGINT UNSIGNED AUTO_INCREMENT,
+    notice_title VARCHAR(200) NOT NULL COMMENT 'Notice Title',
+    notice_type TINYINT UNSIGNED DEFAULT 0 COMMENT '0=Announcement, 1=Notification, 2=Reminder',
+    notice_content TEXT COMMENT 'Content',
+    create_by VARCHAR(50) COMMENT 'Creator',
+    status TINYINT UNSIGNED DEFAULT 1,
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_deleted TINYINT UNSIGNED DEFAULT 0,
+    PRIMARY KEY pk_id (id),
+    INDEX idx_notice_type (notice_type),
+    INDEX idx_create_time (create_time)
+) COMMENT 'System Notice' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Login log
+CREATE TABLE IF NOT EXISTS sys_login_log (
+    id BIGINT UNSIGNED AUTO_INCREMENT,
+    login_name VARCHAR(50) COMMENT 'Username',
+    ip_address VARCHAR(50) COMMENT 'Client IP',
+    login_location VARCHAR(100) COMMENT 'Geo Location',
+    browser_type VARCHAR(500) COMMENT 'User Agent',
+    os VARCHAR(100) COMMENT 'Operating System',
+    status TINYINT UNSIGNED DEFAULT 0 COMMENT '0=Success, 1=Failure',
+    msg VARCHAR(500) COMMENT 'Message',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_deleted TINYINT UNSIGNED DEFAULT 0,
+    PRIMARY KEY pk_id (id),
+    INDEX idx_login_name (login_name),
+    INDEX idx_create_time (create_time)
+) COMMENT 'Login Log' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- =============================================
 -- Product & Material Master Data
 -- =============================================
@@ -220,7 +254,7 @@ CREATE TABLE IF NOT EXISTS prod_work_order (
     start_date DATE COMMENT 'Start Date',
     end_date DATE COMMENT 'End Date',
     current_process VARCHAR(50) COMMENT 'Current Process',
-    status VARCHAR(20) DEFAULT 'DRAFT' COMMENT 'DRAFT, RELEASED, IN_PROGRESS, COMPLETED, CLOSED',
+    status VARCHAR(20) DEFAULT '待生产' COMMENT '待生产, 生产中, 已完成, 暂停',
     workshop VARCHAR(50) COMMENT 'Workshop',
     production_line VARCHAR(50) COMMENT 'Production Line',
     shift VARCHAR(20) COMMENT 'Shift',
@@ -333,96 +367,6 @@ CREATE TABLE IF NOT EXISTS prod_repair_order (
 ) COMMENT 'Repair Order' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =============================================
--- Plan Management Tables
--- =============================================
-
--- Master Production Schedule
-CREATE TABLE IF NOT EXISTS plan_mps (
-    id BIGINT UNSIGNED AUTO_INCREMENT,
-    plan_no VARCHAR(50) NOT NULL COMMENT 'Plan No',
-    plan_name VARCHAR(100) COMMENT 'Plan Name',
-    plan_period VARCHAR(20) COMMENT 'Period: MONTHLY, WEEKLY',
-    plan_date DATE COMMENT 'Plan Date',
-    product_code VARCHAR(50) COMMENT 'Product Code',
-    product_name VARCHAR(100) COMMENT 'Product Name',
-    plan_qty DECIMAL(10,2) COMMENT 'Plan Quantity',
-    completed_qty DECIMAL(10,2) DEFAULT 0 COMMENT 'Completed Quantity',
-    start_date DATE COMMENT 'Start Date',
-    end_date DATE COMMENT 'End Date',
-    status VARCHAR(20) DEFAULT 'DRAFT' COMMENT 'DRAFT, CONFIRMED, RELEASED, CLOSED',
-    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    is_deleted TINYINT UNSIGNED DEFAULT 0,
-    PRIMARY KEY pk_id (id),
-    UNIQUE KEY uk_plan_no (plan_no),
-    INDEX idx_product_code (product_code),
-    INDEX idx_status (status)
-) COMMENT 'Master Production Schedule' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- Daily Production Plan
-CREATE TABLE IF NOT EXISTS plan_daily (
-    id BIGINT UNSIGNED AUTO_INCREMENT,
-    plan_no VARCHAR(50) NOT NULL COMMENT 'Plan No',
-    mps_id BIGINT COMMENT 'MPS ID',
-    plan_date DATE COMMENT 'Plan Date',
-    product_code VARCHAR(50) COMMENT 'Product Code',
-    product_name VARCHAR(100) COMMENT 'Product Name',
-    plan_qty DECIMAL(10,2) COMMENT 'Plan Quantity',
-    actual_qty DECIMAL(10,2) DEFAULT 0 COMMENT 'Actual Quantity',
-    production_line VARCHAR(50) COMMENT 'Production Line',
-    shift VARCHAR(20) COMMENT 'Shift',
-    workshop VARCHAR(50) COMMENT 'Workshop',
-    status VARCHAR(20) DEFAULT 'DRAFT',
-    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    is_deleted TINYINT UNSIGNED DEFAULT 0,
-    PRIMARY KEY pk_id (id),
-    UNIQUE KEY uk_plan_no (plan_no),
-    INDEX idx_mps_id (mps_id),
-    INDEX idx_product_code (product_code),
-    INDEX idx_plan_date (plan_date)
-) COMMENT 'Daily Production Plan' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- Production Schedule (排产)
-CREATE TABLE IF NOT EXISTS plan_schedule (
-    id BIGINT UNSIGNED AUTO_INCREMENT,
-    schedule_no VARCHAR(50) NOT NULL COMMENT 'Schedule No',
-    work_order_id BIGINT COMMENT 'Work Order ID',
-    product_code VARCHAR(50) COMMENT 'Product Code',
-    process_code VARCHAR(50) COMMENT 'Process Code',
-    equipment_id BIGINT COMMENT 'Equipment ID',
-    production_line VARCHAR(50) COMMENT 'Production Line',
-    plan_start_time DATETIME COMMENT 'Plan Start',
-    plan_end_time DATETIME COMMENT 'Plan End',
-    plan_qty DECIMAL(10,2) COMMENT 'Plan Quantity',
-    priority INT DEFAULT 0,
-    status VARCHAR(20) DEFAULT 'SCHEDULED',
-    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    is_deleted TINYINT UNSIGNED DEFAULT 0,
-    PRIMARY KEY pk_id (id),
-    UNIQUE KEY uk_schedule_no (schedule_no),
-    INDEX idx_work_order_id (work_order_id),
-    INDEX idx_equipment_id (equipment_id),
-    INDEX idx_product_code (product_code)
-) COMMENT 'Production Schedule' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- Order Split records
-CREATE TABLE IF NOT EXISTS plan_order_split (
-    id BIGINT UNSIGNED AUTO_INCREMENT,
-    source_order_no VARCHAR(50) NOT NULL COMMENT 'Source Order No',
-    child_order_no VARCHAR(50) NOT NULL COMMENT 'Child Order No',
-    source_qty DECIMAL(10,2) COMMENT 'Source Quantity',
-    split_qty DECIMAL(10,2) COMMENT 'Split Quantity',
-    split_date DATE COMMENT 'Split Date',
-    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    is_deleted TINYINT UNSIGNED DEFAULT 0,
-    PRIMARY KEY pk_id (id),
-    INDEX idx_source_order_no (source_order_no),
-    INDEX idx_child_order_no (child_order_no)
-) COMMENT 'Order Split' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 -- =============================================
 -- Material Management Tables
 -- =============================================
@@ -965,9 +909,9 @@ CREATE TABLE IF NOT EXISTS quality_standard_detail (
     id BIGINT UNSIGNED AUTO_INCREMENT,
     standard_id BIGINT COMMENT 'Standard ID',
     item_id BIGINT COMMENT 'Inspection Item ID',
-    standard_value VARCHAR(50) COMMENT 'Standard Value',
-    upper_limit VARCHAR(50) COMMENT 'Upper Limit',
-    lower_limit VARCHAR(50) COMMENT 'Lower Limit',
+    standard_value DECIMAL(10,4) COMMENT 'Standard Value',
+    upper_limit DECIMAL(10,4) COMMENT 'Upper Limit',
+    lower_limit DECIMAL(10,4) COMMENT 'Lower Limit',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY pk_id (id),
@@ -1006,10 +950,10 @@ CREATE TABLE IF NOT EXISTS quality_inspection_result (
     order_id BIGINT COMMENT 'Inspection Order ID',
     item_id BIGINT COMMENT 'Inspection Item ID',
     item_name VARCHAR(100) COMMENT 'Item Name',
-    standard_value VARCHAR(50) COMMENT 'Standard Value',
-    upper_limit VARCHAR(50) COMMENT 'Upper Limit',
-    lower_limit VARCHAR(50) COMMENT 'Lower Limit',
-    actual_value VARCHAR(50) COMMENT 'Actual Value',
+    standard_value DECIMAL(10,4) COMMENT 'Standard Value',
+    upper_limit DECIMAL(10,4) COMMENT 'Upper Limit',
+    lower_limit DECIMAL(10,4) COMMENT 'Lower Limit',
+    actual_value DECIMAL(10,4) COMMENT 'Actual Value',
     unit VARCHAR(20) COMMENT 'Unit',
     is_pass TINYINT UNSIGNED DEFAULT 1 COMMENT '0-Fail, 1-Pass',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -1392,30 +1336,6 @@ CREATE TABLE IF NOT EXISTS trace_product_material (
 ) COMMENT 'Product-Material Trace Link' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =============================================
--- ERP Interface Tables
--- =============================================
-
--- ERP Sync Log
-CREATE TABLE IF NOT EXISTS erp_sync_log (
-    id BIGINT UNSIGNED AUTO_INCREMENT,
-    sync_type VARCHAR(30) COMMENT 'IMPORT, EXPORT',
-    data_type VARCHAR(50) COMMENT 'Data Type',
-    source_system VARCHAR(50) COMMENT 'Source System',
-    record_count INT COMMENT 'Record Count',
-    success_count INT DEFAULT 0 COMMENT 'Success Count',
-    fail_count INT DEFAULT 0 COMMENT 'Fail Count',
-    status VARCHAR(20) COMMENT 'RUNNING, SUCCESS, FAILED',
-    error_msg TEXT COMMENT 'Error Message',
-    start_time DATETIME COMMENT 'Start Time',
-    end_time DATETIME COMMENT 'End Time',
-    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY pk_id (id),
-    INDEX idx_status (status),
-    INDEX idx_create_time (create_time)
-) COMMENT 'ERP Sync Log' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- =============================================
 -- Insert Initial Data
 -- =============================================
 
@@ -1428,6 +1348,8 @@ DELETE FROM sys_role;
 DELETE FROM sys_user;
 DELETE FROM sys_department;
 DELETE FROM sys_config;
+DELETE FROM sys_notice;
+DELETE FROM sys_login_log;
 DELETE FROM sys_operation_log;
 DELETE FROM md_product;
 DELETE FROM md_material_category;
@@ -1469,10 +1391,6 @@ DELETE FROM prod_dispatch_order;
 DELETE FROM prod_reporting;
 DELETE FROM prod_wip;
 DELETE FROM prod_repair_order;
-DELETE FROM plan_mps;
-DELETE FROM plan_daily;
-DELETE FROM plan_schedule;
-DELETE FROM plan_order_split;
 DELETE FROM mat_requisition;
 DELETE FROM mat_return;
 DELETE FROM mat_supplement;
@@ -1487,7 +1405,6 @@ DELETE FROM trace_product;
 DELETE FROM trace_material_batch;
 DELETE FROM trace_product_material;
 DELETE FROM wages_record;
-DELETE FROM erp_sync_log;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- Insert default departments
@@ -1501,7 +1418,7 @@ INSERT INTO sys_department (id, parent_id, dept_name, dept_code, sort_order) VAL
 
 -- Insert default admin user (password: admin123)
 INSERT INTO sys_user (id, username, password, real_name, email, dept_id, status) VALUES
-(1, 'admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iAt6Z5Eh', 'Administrator', 'admin@mes.com', 1, 1);
+(1, 'admin', '$2a$10$57nGJ4jGN4C/.4VwJJJtmOVl3aCV1wTLqQoC0ITRsJTpbxkV8G8n.', 'Administrator', 'admin@mes.com', 1, 1);
 
 -- Insert roles
 INSERT INTO sys_role (id, role_name, role_code, description) VALUES
@@ -1523,7 +1440,6 @@ INSERT INTO sys_menu (id, parent_id, menu_name, menu_code, menu_type, url, icon,
 (2, 0, '生产工单', 'prod_order', 'M', '/production/order', 'fa-clipboard-list', 2),
 (3, 0, '条码管理', 'barcode', 'M', '/barcode/type', 'fa-barcode', 3),
 (4, 0, '生产管理', 'prod_mgmt', 'M', '/production/mgmt/task', 'fa-industry', 4),
-(5, 0, '计划管理', 'plan_mgmt', 'M', '/plan/mps', 'fa-calendar-check', 5),
 (6, 0, '物料管理', 'material_mgmt', 'M', '/material/requisition', 'fa-boxes-stacked', 6),
 (7, 0, '仓储管理', 'warehouse_mgmt', 'M', '/warehouse/inbound', 'fa-warehouse', 7),
 (8, 0, '设备管理', 'equip_mgmt', 'M', '/equipment/asset', 'fa-cogs', 8),
@@ -1531,10 +1447,8 @@ INSERT INTO sys_menu (id, parent_id, menu_name, menu_code, menu_type, url, icon,
 (10, 0, '安灯管理', 'andon_mgmt', 'M', '/andon/type', 'fa-lightbulb', 10),
 (11, 0, '工艺管理', 'process_mgmt', 'M', '/process/step', 'fa-project-diagram', 11),
 (12, 0, '计件工资', 'wages', 'M', '/wages', 'fa-calculator', 12),
-(13, 0, '报表分析', 'report', 'M', '/report/output', 'fa-chart-bar', 13),
 (14, 0, '电子看板', 'display_board', 'M', '/dashboard/production-line', 'fa-tachometer-alt', 14),
 (15, 0, '系统管理', 'system', 'M', '/system/user', 'fa-cog', 15),
-(16, 0, 'ERP接口', 'erp', 'M', '/erp/task-read', 'fa-plug', 16),
 (17, 0, '标准API', 'api', 'M', '/api/unit', 'fa-code', 17),
 -- Sub menus: Production Orders
 (201, 2, '工单管理', 'prod_order_mgmt', 'C', '/production/order', 'fa-list', 1),
@@ -1554,11 +1468,6 @@ INSERT INTO sys_menu (id, parent_id, menu_name, menu_code, menu_type, url, icon,
 (405, 4, '生产报工', 'prod_reporting', 'C', '/production/mgmt/reporting', 'fa-pen-to-square', 5),
 (406, 4, '生产完工', 'prod_completion', 'C', '/production/mgmt/completion', 'fa-check-double', 6),
 (407, 4, '返修工单', 'prod_repair', 'C', '/production/mgmt/repair', 'fa-wrench', 7),
--- Sub menus: Plan Management
-(501, 5, '主生产计划', 'plan_mps', 'C', '/plan/mps', 'fa-calendar', 1),
-(502, 5, '日生产计划', 'plan_daily', 'C', '/plan/daily', 'fa-calendar-day', 2),
-(503, 5, '生产排产', 'plan_schedule', 'C', '/plan/schedule', 'fa-timeline', 3),
-(504, 5, '工单拆分', 'plan_split', 'C', '/plan/split', 'fa-scissors', 4),
 -- Sub menus: Material
 (601, 6, '领料管理', 'mat_req', 'C', '/material/requisition', 'fa-arrow-right-to-bracket', 1),
 (602, 6, '退料管理', 'mat_return', 'C', '/material/return', 'fa-arrow-left-to-bracket', 2),
@@ -1595,13 +1504,6 @@ INSERT INTO sys_menu (id, parent_id, menu_name, menu_code, menu_type, url, icon,
 -- Sub menus: Process
 (1101, 11, '工序管理', 'process_step', 'C', '/process/step', 'fa-list-ol', 1),
 (1102, 11, '工艺路线', 'process_route', 'C', '/process/route', 'fa-diagram-project', 2),
--- Sub menus: Report
-(1301, 13, '产量报表', 'rpt_output', 'C', '/report/output', 'fa-chart-line', 1),
-(1302, 13, '实时生产信息', 'rpt_realtime', 'C', '/report/realtime', 'fa-clock', 2),
-(1303, 13, '不良查询', 'rpt_defect', 'C', '/report/defect', 'fa-circle-xmark', 3),
-(1304, 13, '关键物料追溯', 'rpt_mat_trace', 'C', '/report/material-trace', 'fa-magnifying-glass-chart', 4),
-(1305, 13, '产品追溯查询', 'rpt_product_trace', 'C', '/report/product-trace', 'fa-barcode', 5),
-(1306, 13, '车间周期报表', 'rpt_workshop', 'C', '/report/workshop-period', 'fa-table', 6),
 -- Sub menus: Dashboard
 (1401, 14, '产线看板', 'dash_line', 'C', '/dashboard/production-line', 'fa-desktop', 1),
 (1402, 14, '车间看板', 'dash_workshop', 'C', '/dashboard/workshop', 'fa-display', 2),
@@ -1613,9 +1515,6 @@ INSERT INTO sys_menu (id, parent_id, menu_name, menu_code, menu_type, url, icon,
 (1504, 15, '菜单管理', 'sys_menu', 'C', '/system/menu', 'fa-bars', 4),
 (1505, 15, '系统监控', 'sys_monitor', 'C', '/system/monitor', 'fa-heart-pulse', 5),
 (1506, 15, '基础配置', 'sys_config', 'C', '/system/config', 'fa-wrench', 6),
--- Sub menus: ERP
-(1601, 16, '生产任务导入', 'erp_task', 'C', '/erp/task-read', 'fa-file-import', 1),
-(1602, 16, '工序数据导入', 'erp_process', 'C', '/erp/process-read', 'fa-file-import', 2),
 -- Sub menus: API
 (1701, 17, '计量单位(写)', 'api_unit', 'C', '/api/unit', 'fa-pen', 1),
 (1702, 17, '工单(写)', 'api_wo', 'C', '/api/work-order', 'fa-pen', 2),
@@ -1806,24 +1705,6 @@ INSERT INTO andon_record (id, andon_type_id, reason_id, production_line, work_ce
 (4, 1, 2, 'B线-负极装配', 'WC-PACK', 9, 2, '标签打印机故障 - 打印模糊', '已解决', 'NORMAL', '孙丽', DATE_SUB(NOW(), INTERVAL 1 HOUR)),
 (5, 4, 10, 'B线-负极装配', 'WC-MIX', 2, 5, '换模等待 - 模具调试中', '未处理', 'NORMAL', '陈宇', CURRENT_TIMESTAMP()),
 (6, 1, 3, 'A线-正极装配', 'WC-PACK', 10, 6, '包装线B PLC通讯故障', '未处理', 'CRITICAL', '周杰', CURRENT_TIMESTAMP());
-
--- =============================================
--- Insert Plan MPS records
--- =============================================
-INSERT INTO plan_mps (id, plan_no, plan_name, plan_period, plan_date, product_code, product_name, plan_qty, completed_qty, start_date, end_date, status) VALUES
-(1, 'MPS-CUR-M01', '当月LR6 AA生产计划', 'MONTHLY', DATE_SUB(CURRENT_DATE(), INTERVAL 10 DAY), 'LR6', 'LR6 AA碱性电池', 500000, 350000, DATE_SUB(CURRENT_DATE(), INTERVAL 10 DAY), DATE_ADD(CURRENT_DATE(), INTERVAL 20 DAY), '已确认'),
-(2, 'MPS-CUR-M02', '当月LR03 AAA生产计划', 'MONTHLY', DATE_SUB(CURRENT_DATE(), INTERVAL 10 DAY), 'LR03', 'LR03 AAA碱性电池', 800000, 500000, DATE_SUB(CURRENT_DATE(), INTERVAL 10 DAY), DATE_ADD(CURRENT_DATE(), INTERVAL 20 DAY), '已确认'),
-(3, 'MPS-CUR-M03', '当月6LR61 9V生产计划', 'MONTHLY', DATE_SUB(CURRENT_DATE(), INTERVAL 10 DAY), '6LR61', '6LR61 9V碱性电池', 150000, 80000, DATE_SUB(CURRENT_DATE(), INTERVAL 10 DAY), DATE_ADD(CURRENT_DATE(), INTERVAL 20 DAY), '已确认'),
-(4, 'MPS-NXT-M01', '下月LR14 C生产计划', 'MONTHLY', DATE_ADD(CURRENT_DATE(), INTERVAL 1 MONTH), 'LR14', 'LR14 C碱性电池', 200000, 0, DATE_ADD(CURRENT_DATE(), INTERVAL 1 MONTH), DATE_ADD(DATE_ADD(CURRENT_DATE(), INTERVAL 1 MONTH), INTERVAL 20 DAY), '草稿'),
-(5, 'MPS-NXT-M02', '下月LR20 D生产计划', 'MONTHLY', DATE_ADD(CURRENT_DATE(), INTERVAL 1 MONTH), 'LR20', 'LR20 D碱性电池', 100000, 0, DATE_ADD(CURRENT_DATE(), INTERVAL 1 MONTH), DATE_ADD(DATE_ADD(CURRENT_DATE(), INTERVAL 1 MONTH), INTERVAL 20 DAY), '草稿');
-
--- =============================================
--- Insert Daily Plans
--- =============================================
-INSERT INTO plan_daily (id, plan_no, mps_id, plan_date, product_code, product_name, plan_qty, actual_qty, production_line, shift, status) VALUES
-(1, 'DP-CUR-001', 1, CURRENT_DATE(), 'LR6', 'LR6 AA碱性电池', 25000, 18000, 'A线-正极装配', '白班', '生产中'),
-(2, 'DP-CUR-002', 2, CURRENT_DATE(), 'LR03', 'LR03 AAA碱性电池', 40000, 40000, 'B线-负极装配', '白班', '已完成'),
-(3, 'DP-CUR-003', 3, CURRENT_DATE(), '6LR61', '6LR61 9V碱性电池', 10000, 6500, 'A线-正极装配', '白班', '生产中');
 
 -- =============================================
 -- Insert Inspection Orders

@@ -22,4 +22,5 @@ public class EquipEnergyRecord {
     private BigDecimal outputQty;
     private BigDecimal unitEnergy;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

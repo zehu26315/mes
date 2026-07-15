@@ -28,8 +28,8 @@ public class SysMenuServiceImpl implements SysMenuService {
         if (menu.getStatus() == null) {
             menu.setStatus(1);
         }
-        if (menu.getVisible() == null) {
-            menu.setVisible(1);
+        if (menu.getIsVisible() == null) {
+            menu.setIsVisible(1);
         }
         sysMenuMapper.insert(menu);
         return menu;

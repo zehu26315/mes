@@ -5,6 +5,8 @@ import com.example.mes.modules.equipment.entity.EquipRepair;
 
 public interface EquipRepairService {
     EquipRepair create(EquipRepair e);
+    EquipRepair update(EquipRepair e);
+    void delete(Long id);
     EquipRepair getById(Long id);
     PageResult<EquipRepair> list(Long equipId, String status, int page, int pageSize);
     EquipRepair complete(Long id);

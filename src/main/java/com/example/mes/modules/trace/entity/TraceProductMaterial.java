@@ -21,4 +21,5 @@ public class TraceProductMaterial {
     private BigDecimal usedQty;
     private String processCode;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 }

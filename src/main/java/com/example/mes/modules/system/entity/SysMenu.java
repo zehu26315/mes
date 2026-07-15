@@ -21,7 +21,7 @@ public class SysMenu {
     private String url;
     private String icon;
     private Integer sortOrder;
-    private Integer visible;
+    private Integer isVisible;
     private Integer status;
     private Integer isDeleted;
     private LocalDateTime createTime;
