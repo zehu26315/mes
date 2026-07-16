@@ -76,4 +76,10 @@ public class BarcodeController {
                                                           @RequestParam(defaultValue = "10") int pageSize) {
         return Result.ok(barcodeRecordService.list(keyword, status, page, pageSize));
     }
+
+    @DeleteMapping("/records/{id}")
+    public Result<Void> deleteRecord(@PathVariable Long id) {
+        barcodeRecordService.deleteById(id);
+        return Result.ok();
+    }
 }

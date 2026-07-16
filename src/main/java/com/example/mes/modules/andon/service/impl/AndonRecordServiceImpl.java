@@ -59,11 +59,15 @@ public class AndonRecordServiceImpl implements AndonRecordService {
         int offset = (page - 1) * pageSize;
         LocalDateTime start = null;
         LocalDateTime end = null;
-        if (startTime != null && !startTime.isEmpty()) {
-            start = LocalDateTime.parse(startTime, FORMATTER);
-        }
-        if (endTime != null && !endTime.isEmpty()) {
-            end = LocalDateTime.parse(endTime, FORMATTER);
+        try {
+            if (startTime != null && !startTime.isEmpty()) {
+                start = LocalDateTime.parse(startTime, FORMATTER);
+            }
+            if (endTime != null && !endTime.isEmpty()) {
+                end = LocalDateTime.parse(endTime, FORMATTER);
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("时间参数格式错误，请使用 yyyy-MM-dd HH:mm:ss");
         }
         List<AndonRecord> rows = andonRecordMapper.selectList(keyword, andonConfigId, status, productionLine,
                 start, end, offset, pageSize);

@@ -89,6 +89,11 @@ public class ProcessController {
 
     // ==================== RouteDetail ====================
 
+    @GetMapping("/route-details/{id}")
+    public Result<PrcRouteDetail> getRouteDetail(@PathVariable Long id) {
+        return Result.ok(routeDetailService.getById(id));
+    }
+
     @GetMapping("/route-details")
     public Result<PageResult<PrcRouteDetail>> listRouteDetails(@RequestParam(required = false) Long routeId,
                                                                  @RequestParam(defaultValue = "1") int page,
@@ -114,6 +119,11 @@ public class ProcessController {
     }
 
     // ==================== SOP ====================
+
+    @GetMapping("/sops/{id}")
+    public Result<PrcSop> getSop(@PathVariable Long id) {
+        return Result.ok(sopService.getById(id));
+    }
 
     @GetMapping("/sops")
     public Result<PageResult<PrcSop>> listSops(@RequestParam(required = false) Long operationId,

@@ -34,6 +34,7 @@
             <if test="phone != null">phone = #{phone},</if>
             <if test="email != null">email = #{email},</if>
             <if test="status != null">status = #{status},</if>
+            update_time = NOW()
         </set>
         WHERE id = #{id} AND is_deleted = 0
     </update>

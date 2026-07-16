@@ -127,6 +127,11 @@ public class EquipmentController {
 
     // ==================== Repair ====================
 
+    @GetMapping("/repairs/{id}")
+    public Result<EquipRepair> getRepair(@PathVariable Long id) {
+        return Result.ok(repairService.getById(id));
+    }
+
     @GetMapping("/repairs")
     public Result<PageResult<EquipRepair>> listRepairs(@RequestParam(required = false) String keyword,
                                                         @RequestParam(required = false) Long equipmentId,

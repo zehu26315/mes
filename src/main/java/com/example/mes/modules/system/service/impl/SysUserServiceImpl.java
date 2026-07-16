@@ -51,11 +51,12 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional
     @CacheEvict(cacheNames = CacheNames.SYS_USER_LIST, allEntries = true)
     public SysUser createUser(SysUser user) {
-        if (user.getUsername() != null) {
-            SysUser exist = sysUserMapper.selectByUsername(user.getUsername());
-            if (exist != null) {
-                throw new IllegalArgumentException("用户名 '" + user.getUsername() + "' 已存在");
-            }
+        if (user.getUsername() == null || user.getUsername().isBlank()) {
+            throw new IllegalArgumentException("用户名不能为空");
+        }
+        SysUser exist = sysUserMapper.selectByUsername(user.getUsername());
+        if (exist != null) {
+            throw new IllegalArgumentException("用户名 '" + user.getUsername() + "' 已存在");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (user.getStatus() == null) {
