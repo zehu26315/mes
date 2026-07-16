@@ -70,16 +70,10 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
         Map<String, Object> result = new LinkedHashMap<>();
         List<Map<String, Object>> statusStats = mapper.dashboardStatusStats();
         List<Map<String, Object>> stats = new java.util.ArrayList<>();
-        int totalOrders = 0, inProgress = 0, completed = 0, pending = 0;
         for (Map<String, Object> row : statusStats) {
             Object s = row.get("status");
             Number count = (Number) row.get("count");
             int c = count != null ? count.intValue() : 0;
-            totalOrders += c;
-            if (s instanceof Number n && n.intValue() == 1) inProgress = c;
-            else if (s instanceof Number n && n.intValue() == 2) completed = c;
-            else pending += c;
-            // frontend expects [{status, cnt}]
             Map<String, Object> statItem = new java.util.HashMap<>();
             statItem.put("status", s);
             statItem.put("cnt", c);
@@ -87,11 +81,18 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
         }
         result.put("stats", stats);
 
-        // frontend expects dailyOutput with [{day, output}]
+        // frontend expects dailyOutput with [{day, output}] — day as "YYYY-MM-DD" string
         List<Map<String, Object>> dailyOutput = mapper.dashboardDailyOutput();
         for (Map<String, Object> item : dailyOutput) {
-            if (item.containsKey("date")) {
-                item.put("day", item.remove("date"));
+            Object dateVal = item.get("date");
+            if (dateVal != null) {
+                item.put("day", dateVal.toString());
+            }
+            item.remove("date");
+            // ensure output is a number
+            Object outVal = item.get("output");
+            if (outVal instanceof Number n) {
+                item.put("output", n.intValue());
             }
         }
         result.put("dailyOutput", dailyOutput);
@@ -99,11 +100,13 @@ public class ProductionOrderServiceImpl implements ProductionOrderService {
         // frontend expects lineOutput with [{line, output}]
         List<Map<String, Object>> lineOutput = mapper.dashboardLineOutput();
         for (Map<String, Object> item : lineOutput) {
-            if (item.containsKey("name")) {
-                item.put("line", item.remove("name"));
-            }
-            if (item.containsKey("value")) {
-                item.put("output", item.remove("value"));
+            Object nameVal = item.remove("name");
+            if (nameVal != null) item.put("line", nameVal.toString());
+            Object val = item.remove("value");
+            if (val instanceof Number n) {
+                item.put("output", n.intValue());
+            } else if (val != null) {
+                item.put("output", Integer.parseInt(val.toString()));
             }
         }
         result.put("lineOutput", lineOutput);

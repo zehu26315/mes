@@ -1,6 +1,7 @@
 package com.example.mes.common.exception;
 
 import com.example.mes.common.response.Result;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @DisplayName("GlobalExceptionHandler 全局异常处理")
 class GlobalExceptionHandlerTest {
@@ -84,7 +86,11 @@ class GlobalExceptionHandlerTest {
     @Test
     @DisplayName("通用 Exception → 500 + 系统内部错误")
     void handleGenericException() {
-        Result<Void> result = handler.handleException(new RuntimeException("boom"), null);
+        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
+        when(mockRequest.getMethod()).thenReturn("GET");
+        when(mockRequest.getRequestURI()).thenReturn("/api/test");
+
+        Result<Void> result = handler.handleException(new RuntimeException("boom"), mockRequest);
 
         assertEquals(500, result.getCode());
         assertEquals("系统内部错误，请联系管理员", result.getMessage());

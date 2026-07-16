@@ -102,12 +102,12 @@ class SysUserServiceImplTest {
     // ==================== updateUser ====================
 
     @Test
-    @DisplayName("更新用户 → password 和 username 置 null → 返回刷新实体")
+    @DisplayName("更新用户 → 非空密码重新加密, username 置 null → 返回刷新实体")
     void updateUser() {
         SysUser input = SysUser.builder()
                 .id(1L)
                 .username("should_be_nulled")
-                .password("should_be_nulled")
+                .password("new_password")
                 .nickname("新名称")
                 .build();
 
@@ -122,7 +122,7 @@ class SysUserServiceImplTest {
 
         SysUser result = service.updateUser(input);
 
-        assertNull(input.getPassword());
+        assertEquals("$2a$10$encoded", input.getPassword());
         assertNull(input.getUsername());
         verify(sysUserMapper).update(input);
         assertSame(refreshed, result);
