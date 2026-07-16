@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.trace.mapper.MaterialTraceMapper">
+
+    <resultMap id="BaseResultMap" type="MaterialTrace">
+        <id property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="materialCode" column="material_code"/>
+        <result property="materialName" column="material_name"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="supplier" column="supplier"/>
+        <result property="quantity" column="quantity" jdbcType="DECIMAL"/>
+        <result property="unit" column="unit"/>
+        <result property="operationName" column="operation_name"/>
+        <result property="operationTime" column="operation_time"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, order_id, material_code, material_name, batch_no, supplier,
+        quantity, unit, operation_name, operation_time,
+        is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO mes_material_trace (order_id, material_code, material_name, batch_no,
+            supplier, quantity, unit, operation_name, operation_time, create_time, update_time)
+        VALUES (#{orderId}, #{materialCode}, #{materialName}, #{batchNo},
+            #{supplier}, #{quantity}, #{unit}, #{operationName}, #{operationTime},
+            #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="update">
+        UPDATE mes_material_trace
+        <set>
+            <if test="materialCode != null">material_code = #{materialCode},</if>
+            <if test="materialName != null">material_name = #{materialName},</if>
+            <if test="batchNo != null">batch_no = #{batchNo},</if>
+            <if test="supplier != null">supplier = #{supplier},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="operationName != null">operation_name = #{operationName},</if>
+            <if test="operationTime != null">operation_time = #{operationTime},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE mes_material_trace SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM mes_material_trace WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM mes_material_trace WHERE is_deleted = 0
+        <if test="orderId != null">
+            AND order_id = #{orderId}
+        </if>
+        ORDER BY id DESC LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*) FROM mes_material_trace WHERE is_deleted = 0
+        <if test="orderId != null">
+            AND order_id = #{orderId}
+        </if>
+    </select>
+
+</mapper>

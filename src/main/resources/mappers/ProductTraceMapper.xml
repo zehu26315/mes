@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mes.modules.trace.mapper.ProductTraceMapper">
+
+    <resultMap id="BaseResultMap" type="ProductTrace">
+        <id property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="barcode" column="barcode"/>
+        <result property="productModel" column="product_model"/>
+        <result property="batchNo" column="batch_no"/>
+        <result property="productionLine" column="production_line"/>
+        <result property="inspectionResult" column="inspection_result"/>
+        <result property="operator" column="operator"/>
+        <result property="productionTime" column="production_time"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, order_id, barcode, product_model, batch_no, production_line,
+        inspection_result, operator, production_time,
+        is_deleted, create_time, update_time
+    </sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO mes_product_trace (order_id, barcode, product_model, batch_no,
+            production_line, inspection_result, operator, production_time, create_time, update_time)
+        VALUES (#{orderId}, #{barcode}, #{productModel}, #{batchNo},
+            #{productionLine}, #{inspectionResult}, #{operator}, #{productionTime},
+            #{createTime}, #{updateTime})
+    </insert>
+
+    <update id="update">
+        UPDATE mes_product_trace
+        <set>
+            <if test="barcode != null">barcode = #{barcode},</if>
+            <if test="productModel != null">product_model = #{productModel},</if>
+            <if test="batchNo != null">batch_no = #{batchNo},</if>
+            <if test="productionLine != null">production_line = #{productionLine},</if>
+            <if test="inspectionResult != null">inspection_result = #{inspectionResult},</if>
+            <if test="operator != null">operator = #{operator},</if>
+            <if test="productionTime != null">production_time = #{productionTime},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="deleteById">
+        UPDATE mes_product_trace SET is_deleted = 1 WHERE id = #{id}
+    </update>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM mes_product_trace WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM mes_product_trace WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (barcode LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_model LIKE CONCAT('%', #{keyword}, '%')
+                 OR batch_no LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        ORDER BY id DESC LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countList" resultType="long">
+        SELECT COUNT(*) FROM mes_product_trace WHERE is_deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (barcode LIKE CONCAT('%', #{keyword}, '%')
+                 OR product_model LIKE CONCAT('%', #{keyword}, '%')
+                 OR batch_no LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+    </select>
+
+</mapper>

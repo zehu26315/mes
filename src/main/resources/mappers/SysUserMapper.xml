@@ -48,7 +48,10 @@
         WHERE id = #{id} AND is_deleted = 0
     </select>
 
-    <sql id="searchCondition">
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM sys_user
+        WHERE is_deleted = 0
         <if test="keyword != null and keyword != ''">
             AND (username LIKE CONCAT('%', #{keyword}, '%')
                  OR nickname LIKE CONCAT('%', #{keyword}, '%')
@@ -57,13 +60,6 @@
         <if test="status != null">
             AND status = #{status}
         </if>
-    </sql>
-
-    <select id="selectList" resultMap="BaseResultMap">
-        SELECT <include refid="BaseColumns"/>
-        FROM sys_user
-        WHERE is_deleted = 0
-        <include refid="searchCondition"/>
         ORDER BY id DESC
         LIMIT #{offset}, #{limit}
     </select>
@@ -79,7 +75,14 @@
         SELECT COUNT(*)
         FROM sys_user
         WHERE is_deleted = 0
-        <include refid="searchCondition"/>
+        <if test="keyword != null and keyword != ''">
+            AND (username LIKE CONCAT('%', #{keyword}, '%')
+                 OR nickname LIKE CONCAT('%', #{keyword}, '%')
+                 OR phone LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
     </select>
 
 </mapper>
