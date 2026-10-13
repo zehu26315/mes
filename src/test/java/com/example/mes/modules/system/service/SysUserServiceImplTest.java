@@ -89,14 +89,14 @@ class SysUserServiceImplTest {
     }
 
     @Test
-    @DisplayName("创建用户 username=null → 跳过重复检查")
+    @DisplayName("创建用户 username=null → 抛出 IllegalArgumentException")
     void createUser_nullUsername() {
         SysUser input = SysUser.builder().password("123456").build();
 
-        service.createUser(input);
+        assertThrows(IllegalArgumentException.class, () -> service.createUser(input));
 
         verify(sysUserMapper, never()).selectByUsername(any());
-        verify(sysUserMapper).insert(input);
+        verify(sysUserMapper, never()).insert(any());
     }
 
     // ==================== updateUser ====================

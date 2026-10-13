@@ -216,14 +216,14 @@ class ProductionOrderServiceImplTest {
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> daily = (List<Map<String, Object>>) result.get("dailyOutput");
         assertEquals("2026-07-01", daily.get(0).get("day"));
-        assertEquals(500L, daily.get(0).get("output"));
+        assertEquals(500, daily.get(0).get("output"));
         assertNull(daily.get(0).get("date")); // original key removed
 
         // lineOutput: name→line, value→output
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> lines = (List<Map<String, Object>>) result.get("lineOutput");
         assertEquals("L1", lines.get(0).get("line"));
-        assertEquals(300L, lines.get(0).get("output"));
+        assertEquals(300, lines.get(0).get("output"));
         assertNull(lines.get(0).get("name"));  // original key removed
         assertNull(lines.get(0).get("value")); // original key removed
     }
